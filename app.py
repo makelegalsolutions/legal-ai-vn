@@ -5,7 +5,7 @@ import pickle
 from sentence_transformers import SentenceTransformer
 
 st.set_page_config(
-    page_title="AI giải đáp pháp luật VN? - Chính tôi!",
+    page_title="Tôi giải đáp pháp luật VN",
     layout="wide"
 )
 
