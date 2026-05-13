@@ -10,7 +10,7 @@ st.set_page_config(
 )
 
 @st.cache_resource
-def load_system():
+def load_system():f
 
     index = faiss.read_index(
         "law_index.faiss"
@@ -62,11 +62,11 @@ def search_law(
 st.title("⚖️ AI giải đáp pháp luật VN? - Chính tôi!")
 
 st.caption(
-    "Đặt câu hỏi để tìm hiểu pháp luật VN. Hệ thống demo, đang cập nhật thêm dữ liệu"
+    "What a wonderful world. Hệ thống demo, đang cập nhật thêm dữ liệu"
 )
 
 question = st.text_area(
-    "Bạn cần gì cứ nói nhé, vô tư đi!Tôi không bao giờ nói nhiều, không bao giờ ép ăn và không bao giờ ép học. /<BR> "
+    "Bạn cần gì cứ nói nhé, vô tư đi!Tôi không bao giờ nói nhiều, không bao giờ ép ăn và không bao giờ ép học."
 )
 
 if st.button("Trả lời"):
