@@ -1,16 +1,26 @@
-﻿import streamlit as st
+import streamlit as st
 import faiss
 import pickle
 
 from sentence_transformers import SentenceTransformer
 
+
+# =========================
+# CONFIG
+# =========================
+
 st.set_page_config(
-    page_title="AI giải đáp pháp luật VN? - Chính tôi!",
+    page_title="AI giải đáp pháp luật VN - CHÍNH TÔI",
     layout="wide"
 )
 
+
+# =========================
+# LOAD SYSTEM
+# =========================
+
 @st.cache_resource
-def load_system():f
+def load_system():
 
     index = faiss.read_index(
         "law_index.faiss"
@@ -32,6 +42,10 @@ def load_system():f
 
 index, metadata, embedding_model = load_system()
 
+
+# =========================
+# SEARCH
+# =========================
 
 def search_law(
     query,
@@ -59,29 +73,39 @@ def search_law(
     return results
 
 
-st.title("⚖️ AI giải đáp pháp luật VN? - Chính tôi!")
+# =========================
+# UI
+# =========================
+
+st.title("⚖️ AI giải đáp pháp luật VN? - CHÍNH TÔI!")
 
 st.caption(
-    "What a wonderful world. Hệ thống demo, đang cập nhật thêm dữ liệu"
+    "What a wonderful world! Website is under construction"
 )
 
 question = st.text_area(
-    "Bạn cần gì cứ nói nhé, vô tư đi!Tôi không bao giờ nói nhiều, không bao giờ ép ăn và không bao giờ ép học."
+    "Bạn cần gì, cứ nói nhé vô tư! Tôi không bao giờ nói nhiều, không bao giờ ép ăn và không bao giờ ép học."
 )
 
 if st.button("Trả lời"):
 
-    docs = search_law(question)
+    if question.strip() != "":
 
-    for d in docs:
+        docs = search_law(question)
 
-        st.markdown("---")
-
-        st.write(
-            "Nguồn:",
-            d["source"]
+        st.subheader(
+            "Kết quả"
         )
 
-        st.write(
-            d["text"][:1500]
-        )
+        for d in docs:
+
+            st.markdown("---")
+
+            st.write(
+                "Nguồn:",
+                d["source"]
+            )
+
+            st.write(
+                d["text"][:1500]
+            )
