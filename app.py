@@ -62,7 +62,7 @@ def search_law(
 st.title("⚖️ AI giải đáp pháp luật VN? - Chính tôi!")
 
 st.caption(
-    "Tìm hiểu pháp luật VN - Hệ thống demo, đang cập nhật thêm dữ liệu"
+    "Bạn cần gì cứ nói nhé, vô tư đi. Tôi không bao giờ nói nhiều, không bao giờ ép ăn và không bao giờ ép học. Hệ thống demo, đang cập nhật thêm dữ liệu"
 )
 
 question = st.text_area(
