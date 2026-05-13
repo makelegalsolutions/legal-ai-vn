@@ -84,7 +84,7 @@ st.caption(
 )
 
 question = st.text_area(
-    "Bạn cần gì, cứ nói nhé vô tư! Tôi không bao giờ nói nhiều, không bao giờ ép ăn và không bao giờ ép học."
+    "Bạn cần gì, cứ nói nhé, vô tư! Tôi không bao giờ nói nhiều, không bao giờ ép ăn và không bao giờ ép học."
 )
 
 if st.button("Trả lời"):
