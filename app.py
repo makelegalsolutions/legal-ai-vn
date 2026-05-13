@@ -1,0 +1,87 @@
+﻿import streamlit as st
+import faiss
+import pickle
+
+from sentence_transformers import SentenceTransformer
+
+st.set_page_config(
+    page_title="AI giải đáp pháp luật VN",
+    layout="wide"
+)
+
+@st.cache_resource
+def load_system():
+
+    index = faiss.read_index(
+        "law_index.faiss"
+    )
+
+    with open(
+        "metadata.pkl",
+        "rb"
+    ) as f:
+
+        metadata = pickle.load(f)
+
+    embedding_model = SentenceTransformer(
+        "paraphrase-multilingual-MiniLM-L12-v2"
+    )
+
+    return index, metadata, embedding_model
+
+
+index, metadata, embedding_model = load_system()
+
+
+def search_law(
+    query,
+    top_k=5
+):
+
+    query_embedding = embedding_model.encode(
+        [query],
+        convert_to_numpy=True
+    )
+
+    distances, indices = index.search(
+        query_embedding,
+        top_k
+    )
+
+    results = []
+
+    for idx in indices[0]:
+
+        results.append(
+            metadata[idx]
+        )
+
+    return results
+
+
+st.title("⚖️ AI giải đáp pháp luật VN")
+
+st.caption(
+    "Tra cứu văn bản pháp luật bằng AI"
+)
+
+question = st.text_area(
+    "Nhập câu hỏi pháp luật"
+)
+
+if st.button("Tìm văn bản liên quan"):
+
+    docs = search_law(question)
+
+    for d in docs:
+
+        st.markdown("---")
+
+        st.write(
+            "Nguồn:",
+            d["source"]
+        )
+
+        st.write(
+            d["text"][:1500]
+        )
