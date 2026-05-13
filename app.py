@@ -5,7 +5,7 @@ import pickle
 from sentence_transformers import SentenceTransformer
 
 st.set_page_config(
-    page_title="Tôi giải đáp pháp luật VN",
+    page_title="AI giải đáp pháp luật VN? - Chính tôi!",
     layout="wide"
 )
 
@@ -59,7 +59,7 @@ def search_law(
     return results
 
 
-st.title("⚖️ AI giải đáp pháp luật VN")
+st.title("⚖️ AI giải đáp pháp luật VN? - Chính tôi!")
 
 st.caption(
     "Tìm hiểu pháp luật VN - đừng phức tạp quá nhé"
