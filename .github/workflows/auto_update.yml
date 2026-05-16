@@ -2,39 +2,37 @@ name: Auto Daily Legal RAG Update
 
 on:
   schedule:
-    - cron: '0 19 * * *' 
-  workflow_dispatch: 
+    - cron: '0 0 * * *'  # 7h sáng giờ VN
+  workflow_dispatch:
 
 jobs:
   rag-update-only:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout mã nguồn dự án
-        uses: actions/checkout@v4  # Cập nhật lên v4 để xóa cảnh báo Node.js
+        uses: actions/checkout@v4
 
       - name: Cài đặt môi trường Python
-        uses: actions/setup-python@v5  # Cập nhật lên v5 để xóa cảnh báo Node.js
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.11'
 
       - name: Cài đặt các thư viện hệ thống
         run: |
           pip install --upgrade pip
-          pip install faiss-cpu sentence-transformers pydrive2
+          pip install faiss-cpu sentence-transformers \
+                      google-api-python-client google-auth \
+                      numpy
 
       - name: Khởi chạy tập lệnh cập nhật Vector FAISS
         env:
-          GMAIL_USER: ${{ secrets.GMAIL_USER }}
-          GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
-        run: |
-          # Thêm cờ bỏ qua tương tác trình duyệt của PyDrive2 trong môi trường tự động
-          export PYDRIVE_CONFIG_SETTINGS_FILE="settings.yaml"
-          echo "client_config_backend: settings" > settings.yaml
-          python update_data.py
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+        run: python update_index.py
 
-      - name: Tự động ghi đè lưu trữ file .faiss và metadata mới lên GitHub
+      - name: Lưu file .faiss và metadata lên GitHub
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action Bot"
           git add legal_index.faiss metadata.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "bot: cập nhật dữ liệu vector và ngữ cảnh pháp luật mới" && git push)
+          git diff --staged --quiet || git commit -m "bot: cập nhật vector và metadata mới" && git push
