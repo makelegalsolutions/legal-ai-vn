@@ -13,7 +13,7 @@ from sentence_transformers import SentenceTransformer
 # 1. CẤU HÌNH GIAO DIỆN WEB
 # ====================================
 st.set_page_config(
-    page_title="Trợ Lý Pháp Luật AI",
+    page_title="AI Giải Đáp Pháp Luật Đấy...!?",
     page_icon="⚖️",
     layout="centered"
 )
@@ -76,8 +76,8 @@ with st.sidebar:
         st.markdown("🌡️ 33°C\n\n☁️ Nhiều mây")
 
 # Giao diện chính của website
-st.title("⚖️ Trợ Lý Pháp Luật AI")
-st.write("Hệ thống RAG tư vấn pháp luật tự động có trích dẫn nguồn văn bản.")
+st.title("⚖️ AI Giải Đáp Pháp Luật Đấy...!?")
+st.write("Hệ thống đang được cập nhật. Mời bạn hỏi, vô tư đi. Tôi không bao giờ nói nhiều, không bao giờ ép ăn và không bao giờ ép học")
 
 # ====================================
 # 3. KHỞI TẠO LÕI RAG (Hệ thống chạy ngầm)
