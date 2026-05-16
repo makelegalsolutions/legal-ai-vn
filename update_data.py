@@ -1,11 +1,9 @@
 import os
-import io
 import json
 import faiss
 import numpy as np
-from google.oauth2.service_account import Credentials
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseDownload
+from pydrive2.auth import GoogleAuth
+from pydrive2.drive import GoogleDrive
 from sentence_transformers import SentenceTransformer
 
 # ====================================
@@ -19,31 +17,32 @@ CHUNK_SIZE       = 500               # Số từ mỗi chunk
 CHUNK_OVERLAP    = 50                # Số từ gối đầu giữa các chunk
 
 # ====================================
-# 1. KẾT NỐI GOOGLE DRIVE
+# 1. KẾT NỐI GOOGLE DRIVE BẰNG APP PASSWORD
 # ====================================
-print("🔗 Đang kết nối Google Drive...")
+print("🔗 Đang kết nối Google Drive qua App Password...")
 try:
-    service_account_info = json.loads(os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"])
-    creds = Credentials.from_service_account_info(
-        service_account_info,
-        scopes=["https://www.googleapis.com/auth/drive.readonly"]
+    gauth = GoogleAuth()
+    gauth.auth_method = 'client'
+    # Đăng nhập thẳng bằng tài khoản Gmail cá nhân cá nhân và mật khẩu ứng dụng
+    gauth.credentials = gauth.auth.authenticate_user_credentials(
+        username=os.environ["GMAIL_USER"],
+        password=os.environ["GMAIL_PASSWORD"]
     )
-    drive_service = build("drive", "v3", credentials=creds)
+    drive = GoogleDrive(gauth)
     print("✅ Kết nối thành công.")
 except Exception as e:
     raise SystemExit(f"❌ Lỗi kết nối Google Drive: {e}")
 
 # ====================================
-# 2. LẤY DANH SÁCH FILE TRÊN DRIVE
+# 2. LẤY DANH SÁCH FILE TRÊN DRIVE (Sử dụng PyDrive2)
 # ====================================
 print("🔍 Đang quét thư mục Drive...")
-results = drive_service.files().list(
-    q=f"'{DRIVE_FOLDER_ID}' in parents and trashed = false",
-    fields="files(id, name)"
-).execute()
-files = results.get("files", [])
+try:
+    file_list = drive.ListFile({'q': f"'{DRIVE_FOLDER_ID}' in parents and trashed=false"}).GetList()
+except Exception as e:
+    raise SystemExit(f"❌ Không thể đọc danh sách file từ thư mục Drive ID '{DRIVE_FOLDER_ID}': {e}")
 
-if not files:
+if not file_list:
     raise SystemExit("✨ Thư mục Drive trống. Dừng.")
 
 # ====================================
@@ -56,12 +55,12 @@ else:
     metadata = []
 
 da_index = {entry["file"] for entry in metadata}  # Tập hợp tên các file đã chạy trước đó
-files_moi = [f for f in files if f["name"].endswith(".txt") and f["name"] not in da_index]
+files_moi = [f for f in file_list if f["title"].endswith(".txt") and f["title"] not in da_index]
 
 if not files_moi:
     raise SystemExit("✨ Không có văn bản mới. Hệ thống FAISS đã được cập nhật tối tân nhất.")
 
-print(f"📄 Tìm thấy {len(files_moi)} file mới: {[f['name'] for f in files_moi]}")
+print(f"📄 Tìm thấy {len(files_moi)} file mới: {[f['title'] for f in files_moi]}")
 
 # ====================================
 # 4. TẢI VÀ CHUNK VĂN BẢN (Lưu kèm nội dung text vào Metadata)
@@ -79,32 +78,26 @@ all_chunks   = []
 new_metadata = []  
 
 for file in files_moi:
-    print(f"  ⬇️  Đang tải: {file['name']}")
+    file_name = file['title']
+    print(f"  ⬇️  Đang tải: {file_name}")
     try:
-        fh = io.BytesIO()
-        downloader = MediaIoBaseDownload(
-            fh, drive_service.files().get_media(fileId=file["id"])
-        )
-        done = False
-        while not done:
-            _, done = downloader.next_chunk()
-
-        text   = fh.getvalue().decode("utf-8")
+        # Tải trực tiếp nội dung dạng chuỗi chữ từ Google Drive
+        text = file.GetContentString(encoding="utf-8")
         chunks = chunk_text(text)
 
         if not chunks:
-            print(f"  ⚠️  File rỗng, bỏ qua: {file['name']}")
+            print(f"  ⚠️  File rỗng, bỏ qua: {file_name}")
             continue
 
         for i, chunk in enumerate(chunks):
             all_chunks.append(chunk)
-            # THAY ĐỔI QUAN TRỌNG: Lưu kèm trường "text" để Streamlit đọc trực tiếp ngữ cảnh gốc
-            new_metadata.append({"file": file["name"], "chunk": i, "text": chunk})
+            # Giữ nguyên cấu trúc yêu cầu của bạn: lưu kèm trường "text"
+            new_metadata.append({"file": file_name, "chunk": i, "text": chunk})
 
         print(f"      → Đã băm thành {len(chunks)} chunks")
 
     except Exception as e:
-        print(f"  ❌ Lỗi tải {file['name']}: {e}")
+        print(f"  ❌ Lỗi tải {file_name}: {e}")
 
 if not all_chunks:
     raise SystemExit("⚠️ Không có dữ liệu chữ nào hợp lệ để xử lý tiếp.")
@@ -133,11 +126,11 @@ else:
     index = faiss.IndexFlatIP(BGE_DIM)
 
 # ====================================
-# 7. THÊM VECTOR VÀ LƯU GHI ĐÈ LÊN GITHUB
+# 7. THÊM VECTOR VÀ LƯU GHI ĐÈ
 # ====================================
 index.add(new_vectors)
 faiss.write_index(index, INDEX_FILE)
-print(f"💾 Đã ghi nhận index: {INDEX_FILE} (Tổng cộng {index.ntotal} vectors lưu trên mây)")
+print(f"💾 Đã ghi nhận index: {INDEX_FILE} (Tổng cộng {index.ntotal} vectors lưu trên hệ thống)")
 
 metadata.extend(new_metadata)
 with open(METADATA_FILE, "w", encoding="utf-8") as f:
