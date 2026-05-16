@@ -120,7 +120,7 @@ with st.sidebar:
         "chính xác, vui lòng liên hệ **luật sư hoặc cơ quan pháp luật** "
         "có thẩm quyền."
     )
-    st.caption("© 2026 · Trợ Lý Pháp Luật AI · Nguồn: Công báo Chính phủ")
+    st.caption("© 2026 · email:legalsolutions@gmail.com")
 
 # ====================================
 # 3. TIÊU ĐỀ TRANG CHÍNH
