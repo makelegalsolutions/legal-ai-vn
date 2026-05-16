@@ -1,4 +1,6 @@
 ﻿streamlit
-faiss-cpu
+google-genai
 sentence-transformers
+faiss-cpu
 numpy
+pandas
