@@ -50,7 +50,7 @@ jobs:
           cache: 'pip'
 
       # ========================================
-      # 3. CACHE HUGGING FACE MODELS (GIẢM 10-15 PHÚT)
+      # 3. CACHE HUGGING FACE MODELS
       # ========================================
       - name: Cache Hugging Face models
         uses: actions/cache@v4
@@ -61,33 +61,22 @@ jobs:
             ${{ runner.os }}-hf-models-v1-
 
       # ========================================
-      # 4. CACHE FAISS INDEX (KHÔNG CẦN TẠI LẠI)
-      # ========================================
-      - name: Cache FAISS index
-        uses: actions/cache@v4
-        with:
-          path: data/vectorstore/legal_index.faiss
-          key: ${{ runner.os }}-faiss-${{ hashFiles('data/chunks/legal_chunks_latest.json') }}
-          restore-keys: |
-            ${{ runner.os }}-faiss-
-
-      # ========================================
-      # 5. INSTALL DEPENDENCIES
+      # 4. INSTALL DEPENDENCIES
       # ========================================
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install streamlit pypdf2 python-docx pydrive2 sentence-transformers faiss-cpu google-generativeai beautifulsoup4 requests numpy tqdm python-dotenv
+          pip install -r requirements.txt
 
       # ========================================
-      # 6. CREATE SERVICE ACCOUNT FILE (TẠM THỜI)
+      # 5. CREATE SERVICE ACCOUNT FILE
       # ========================================
       - name: Create service account file
         run: |
           echo '${{ secrets.GDRIVE_SERVICE_ACCOUNT }}' > service_account.json
 
       # ========================================
-      # 7. CRAWL FROM CONGBAO (TÙY CHỌN)
+      # 6. CRAWL FROM CONGBAO (TÙY CHỌN)
       # ========================================
       - name: Crawl from Congbao
         if: github.event.inputs.skip_crawl != 'true'
@@ -97,7 +86,7 @@ jobs:
         continue-on-error: true
 
       # ========================================
-      # 8. VALIDATION PIPELINE
+      # 7. VALIDATION PIPELINE
       # ========================================
       - name: Run validation pipeline
         env:
@@ -105,31 +94,35 @@ jobs:
         run: python pipeline/validate_pipeline.py
 
       # ========================================
-      # 9. TEXT PROCESSING
+      # 8. TEXT PROCESSING
       # ========================================
       - name: Run text processing
         run: python pipeline/text_processing.py
 
       # ========================================
-      # 10. CHUNKING PIPELINE
+      # 9. CHUNKING PIPELINE
       # ========================================
       - name: Run chunking pipeline
         run: python pipeline/chunking_pipeline.py
 
       # ========================================
-      # 11. VECTOR PIPELINE (TẠO FAISS)
+      # 10. VECTOR PIPELINE (TẠO FAISS & UPLOAD LÊN DRIVE)
       # ========================================
       - name: Run vector pipeline
+        env:
+          FAISS_DRIVE_FOLDER_ID: ${{ secrets.FAISS_DRIVE_FOLDER_ID }}
         run: python pipeline/vector_pipeline.py
 
       # ========================================
-      # 12. TEST SEARCH
+      # 11. TEST SEARCH PIPELINE
       # ========================================
       - name: Test search pipeline
+        env:
+          FAISS_DRIVE_FOLDER_ID: ${{ secrets.FAISS_DRIVE_FOLDER_ID }}
         run: python pipeline/search_pipeline.py || echo "Search test skipped"
 
       # ========================================
-      # 13. TEST LLM (NẾU CÓ API KEY)
+      # 12. TEST LLM PIPELINE (NẾU CÓ API KEY)
       # ========================================
       - name: Test LLM pipeline
         if: env.GEMINI_API_KEY != ''
@@ -138,9 +131,21 @@ jobs:
         run: python pipeline/llm_pipeline.py || echo "LLM test skipped"
 
       # ========================================
-      # 14. CLEAN OLD FAISS VERSIONS (GIỮ 5 BẢN)
+      # 13. CLEAN OLD FAISS VERSIONS ON DRIVE
       # ========================================
-      - name: Clean old versions
+      - name: Clean old FAISS versions
+        env:
+          FAISS_DRIVE_FOLDER_ID: ${{ secrets.FAISS_DRIVE_FOLDER_ID }}
+        run: |
+          python -c "
+          from pipeline.faiss_drive_manager import clean_old_versions
+          clean_old_versions('${{ secrets.FAISS_DRIVE_FOLDER_ID }}', keep=5)
+          " || echo "Cleanup skipped"
+
+      # ========================================
+      # 14. CLEAN LOCAL OLD FILES (GIỮ 5 BẢN)
+      # ========================================
+      - name: Clean local old versions
         run: |
           cd data/vectorstore
           ls -t legal_index_*.faiss 2>/dev/null | tail -n +6 | xargs -r rm -f
@@ -149,7 +154,7 @@ jobs:
           cd ../..
 
       # ========================================
-      # 15. COMMIT DATA (KHÔNG BAO GỒM SECRET)
+      # 15. COMMIT DATA (KHÔNG BAO GỒM FAISS LỚN)
       # ========================================
       - name: Commit and push data files
         run: |
@@ -159,9 +164,12 @@ jobs:
           # Xóa secret file trước khi commit
           rm -f service_account.json
           
-          # Chỉ commit thư mục data
-          git add data/
-          git add pipeline/__init__.py 2>/dev/null || true
+          # Chỉ commit metadata, không commit FAISS lớn
+          git add data/chunks/
+          git add data/texts/
+          git add data/state/
+          git add data/vectorstore/*.json 2>/dev/null || true
+          git add data/vectorstore/latest_version.txt 2>/dev/null || true
           
           if git diff --staged --quiet; then
             echo "📭 No changes to commit"
@@ -172,7 +180,7 @@ jobs:
           fi
 
       # ========================================
-      # 16. CLEANUP (LUÔN CHẠY)
+      # 16. CLEANUP SENSITIVE FILES
       # ========================================
       - name: Cleanup sensitive files
         if: always()
@@ -197,10 +205,10 @@ jobs:
             echo "📊 Total chunks: $CHUNKS"
           fi
           
-          # Hiển thị version
+          # Hiển thị version local
           if [ -f "data/vectorstore/latest_version.txt" ]; then
             VERSION=$(cat data/vectorstore/latest_version.txt)
-            echo "📌 Latest version: $VERSION"
+            echo "📌 Latest local version: $VERSION"
           fi
           
           echo "=========================================="
