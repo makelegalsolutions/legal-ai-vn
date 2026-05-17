@@ -2,9 +2,11 @@ name: Update Legal Documents
 
 on:
 
+  # Chạy tự động mỗi 30 phút
   schedule:
     - cron: '*/30 * * * *'
 
+  # Cho phép chạy thủ công
   workflow_dispatch:
 
 
@@ -20,7 +22,7 @@ jobs:
     steps:
 
       # ====================================
-      # CHECKOUT REPOSITORY
+      # Checkout Repository
       # ====================================
 
       - name: Checkout repository
@@ -28,7 +30,7 @@ jobs:
 
 
       # ====================================
-      # SETUP PYTHON
+      # Setup Python
       # ====================================
 
       - name: Setup Python
@@ -38,7 +40,7 @@ jobs:
 
 
       # ====================================
-      # INSTALL REQUIREMENTS
+      # Install Requirements
       # ====================================
 
       - name: Install requirements
@@ -47,31 +49,18 @@ jobs:
 
 
       # ====================================
-      # CREATE SERVICE ACCOUNT FILE
+      # Create Google Service Account File
       # ====================================
 
       - name: Create service account file
-        shell: bash
         run: |
-          printf '%s' '${{ secrets.GDRIVE_SERVICE_ACCOUNT }}' > service_account.json
+          cat <<EOF > service_account.json
+          ${{ secrets.GDRIVE_SERVICE_ACCOUNT }}
+          EOF
 
 
       # ====================================
-      # DEBUG SERVICE ACCOUNT FILE
-      # ====================================
-
-      - name: Debug service account file
-        run: |
-          echo "===== FIRST 5 LINES ====="
-          head -n 5 service_account.json
-
-          echo ""
-          echo "===== FILE SIZE ====="
-          wc -c service_account.json
-
-
-      # ====================================
-      # RUN VALIDATION PIPELINE
+      # Run Validation Pipeline
       # ====================================
 
       - name: Run validation pipeline
