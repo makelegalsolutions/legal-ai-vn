@@ -1,0 +1,41 @@
+name: Clean Data Directory
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "CONFIRM" to proceed with cleaning'
+        required: true
+        default: ''
+        type: string
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm == 'CONFIRM'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Remove all data
+        run: |
+          echo "🧹 Cleaning data directory..."
+          rm -rf data/
+          mkdir -p data/chunks data/texts data/vectorstore data/state data/downloads data/logs
+          echo "✅ Clean completed"
+      
+      - name: Commit clean state
+        run: |
+          git config user.name "github-actions[bot]"
+          git config.user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git commit -m "🧹 Clean: Reset data directory for fresh start" || echo "No changes"
+          git push
+      
+      - name: Summary
+        run: |
+          echo "=========================================="
+          echo "✅ CLEAN COMPLETED"
+          echo "=========================================="
+          ls -la data/
