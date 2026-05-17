@@ -22,7 +22,7 @@ jobs:
     steps:
 
       # ====================================
-      # Checkout GitHub Repo
+      # Checkout Repository
       # ====================================
 
       - name: Checkout repository
@@ -40,7 +40,7 @@ jobs:
 
 
       # ====================================
-      # Install Dependencies
+      # Install Requirements
       # ====================================
 
       - name: Install requirements
@@ -54,7 +54,9 @@ jobs:
 
       - name: Create service account file
         run: |
-          echo '${{ secrets.GDRIVE_SERVICE_ACCOUNT }}' > service_account.json
+          cat <<EOF > service_account.json
+          ${{ secrets.GDRIVE_SERVICE_ACCOUNT }}
+          EOF
 
 
       # ====================================
