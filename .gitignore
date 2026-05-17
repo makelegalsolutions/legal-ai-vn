@@ -11,6 +11,9 @@ __pycache__/
 *$py.class
 *.so
 .Python
+*.egg-info/
+dist/
+build/
 
 # Virtual Environment
 venv/
@@ -24,17 +27,19 @@ venv.bak/
 .idea/
 *.swp
 *.swo
-
-# OS
 .DS_Store
 Thumbs.db
 
-# Data large files (optional - chỉ commit metadata)
+# Logs
+*.log
+data/logs/
+
+# Large data files (optional - comment out if you want to commit)
 # data/vectorstore/*.faiss
 # data/vectorstore/*.npy
 # data/downloads/*.pdf
 # data/downloads/*.docx
 
-# Logs
-*.log
-data/logs/
+# Cache
+.cache/
+.huggingface/
