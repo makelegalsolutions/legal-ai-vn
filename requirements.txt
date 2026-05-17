@@ -1,8 +1,4 @@
-﻿streamlit
-google-genai
-sentence-transformers
-faiss-cpu
-numpy
-pandas
-requests==2.31.0
-lunarcalendar==0.0.9
+pydrive2
+oauth2client
+python-docx
+PyPDF2
