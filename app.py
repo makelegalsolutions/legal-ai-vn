@@ -290,12 +290,12 @@ st.markdown("""
     
     /* Style cho thông tin thời gian */
     .time-info {
-        font-size: 1.1rem;
-        line-height: 1.6;
+        font-size: 1rem;
+        line-height: 1.8;
         margin-bottom: 10px;
     }
     
-    /* Style cho thời tiết 3 cột */
+    /* Style cho thời tiết 3 cột - NỀN SÁNG */
     .weather-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -303,19 +303,32 @@ st.markdown("""
         margin-bottom: 15px;
     }
     .weather-card {
-        background-color: #1e1e1e;
+        background-color: #f0f2f6;
         padding: 10px 5px;
         border-radius: 10px;
         text-align: center;
+        border: 1px solid #e0e0e0;
     }
     .weather-temp {
         font-size: 1.3rem;
         font-weight: bold;
+        color: #1e1e1e;
+    }
+    .weather-condition {
+        font-size: 0.8rem;
+        color: #333333;
+        margin-top: 4px;
     }
     .weather-detail {
         font-size: 0.7rem;
-        color: #aaaaaa;
-        margin-top: 5px;
+        color: #555555;
+        margin-top: 6px;
+        line-height: 1.4;
+    }
+    .weather-city {
+        font-weight: bold;
+        font-size: 0.9rem;
+        color: #1e1e1e;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -336,25 +349,24 @@ with st.sidebar:
     st.divider()
     
     # ========================================
-    # TIỆN ÍCH 1: NGÀY GIỜ (CỠ CHỮ TO, RÕ)
+    # TIỆN ÍCH 1: NGÀY GIỜ
     # ========================================
     st.markdown("### 📅 Thông tin thời gian")
     
     hanoi_time = get_hanoi_time()
     
-    # Hiển thị giờ, ngày DL, ngày AL với cỡ chữ đều và to
     st.markdown(f"""
     <div class="time-info">
-        <b>🕐 Giờ Hà Nội:</b> <span style="font-size: 1.2rem;">{hanoi_time.strftime("%H:%M:%S")}</span><br>
-        <b>📆 Dương lịch:</b> <span style="font-size: 1.1rem;">{hanoi_time.strftime("%d/%m/%Y")}</span><br>
-        <b>📖 Âm lịch:</b> <span style="font-size: 1.1rem;">{get_lunar_date()}</span>
+        <b>🕐 Giờ Hà Nội:</b> <span style="font-size: 1.1rem;">{hanoi_time.strftime("%H:%M:%S")}</span><br>
+        <b>📆 Dương lịch:</b> <span style="font-size: 1rem;">{hanoi_time.strftime("%d/%m/%Y")}</span><br>
+        <b>📖 Âm lịch:</b> <span style="font-size: 1rem;">{get_lunar_date()}</span>
     </div>
     """, unsafe_allow_html=True)
     
     st.divider()
     
     # ========================================
-    # TIỆN ÍCH 2: THỜI TIẾT (3 CỘT)
+    # TIỆN ÍCH 2: THỜI TIẾT (3 CỘT - NỀN SÁNG)
     # ========================================
     st.markdown("### 🌡️ Thời tiết hôm nay")
     
@@ -369,12 +381,12 @@ with st.sidebar:
         with cols[idx]:
             st.markdown(f"""
             <div class="weather-card">
-                <div><b>{w['icon']} {city}</b></div>
+                <div class="weather-city">{w['icon']} {city}</div>
                 <div class="weather-temp">{w['temp']}</div>
-                <div style="font-size: 0.8rem;">{w['condition']}</div>
+                <div class="weather-condition">{w['condition']}</div>
                 <div class="weather-detail">
                     💧 {w['humidity']}<br>
-                    🌬️ {w['wind'][:20]}...
+                    🌬️ {w['wind']}
                 </div>
             </div>
             """, unsafe_allow_html=True)
