@@ -1,0 +1,66 @@
+name: Update Legal Documents
+
+on:
+
+  # Chạy tự động mỗi 30 phút
+  schedule:
+    - cron: '*/30 * * * *'
+
+  # Cho phép chạy thủ công
+  workflow_dispatch:
+
+
+jobs:
+
+  update-laws:
+
+    runs-on: ubuntu-latest
+
+    env:
+      DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
+
+    steps:
+
+      # ====================================
+      # Checkout GitHub Repo
+      # ====================================
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+
+      # ====================================
+      # Setup Python
+      # ====================================
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+
+      # ====================================
+      # Install Dependencies
+      # ====================================
+
+      - name: Install requirements
+        run: |
+          pip install -r requirements.txt
+
+
+      # ====================================
+      # Create Google Service Account File
+      # ====================================
+
+      - name: Create service account file
+        run: |
+          echo '${{ secrets.GDRIVE_SERVICE_ACCOUNT }}' > service_account.json
+
+
+      # ====================================
+      # Run Validation Pipeline
+      # ====================================
+
+      - name: Run validation pipeline
+        run: |
+          python pipeline/validate_pipeline.py
