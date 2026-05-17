@@ -1,4 +1,10 @@
+streamlit
+python-dotenv
 pydrive2
-oauth2client
 python-docx
 PyPDF2
+sentence-transformers
+faiss-cpu
+google-generativeai
+pandas
+tqdm
