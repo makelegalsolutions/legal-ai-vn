@@ -1,8 +1,0 @@
-{
-    "embedding_model_name": "BAAI/bge-m3",
-    "faiss_index_path": "legal_index.faiss",
-    "optimal_top_k": 5,
-    "optimal_threshold": 0.5,
-    "system_status": "ready_for_production",
-    "last_evaluation_accuracy": "100.00%"
-}
