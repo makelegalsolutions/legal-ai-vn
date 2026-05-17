@@ -12,9 +12,10 @@ from pathlib import Path
 # ========================================
 VECTORSTORE_DIR = "data/vectorstore"
 
-CHUNKS_METADATA_FILE = os.path.join(VECTORSTORE_DIR, "chunks_metadata.json")
-FAISS_INDEX_FILE = os.path.join(VECTORSTORE_DIR, "legal_index.faiss")
-INDEX_METADATA_FILE = os.path.join(VECTORSTORE_DIR, "index_metadata.json")
+# Files will be versioned
+CHUNKS_METADATA_FILE = None  # Will be set dynamically
+FAISS_INDEX_FILE = None       # Will be set dynamically
+INDEX_METADATA_FILE = None    # Will be set dynamically
 
 # Thresholds
 STRICT_DOMAIN_THRESHOLD = 0.60
@@ -22,41 +23,101 @@ STRICT_TOP1_THRESHOLD = 0.82
 RETRIEVAL_THRESHOLD = 0.45
 MAX_RETURN_TEXT_CHARS = 500
 
-# ========================================
-# LOAD VECTORSTORE WITH SAFE HANDLING
-# ========================================
-print("📥 Đang load FAISS index và metadata...")
+# Global state for hot-swap
+_current_version = None
+_chunks = []
+_index = None
+_embedding_model = None
+_chunk_by_id = {}
 
-CHUNKS = []
-index = None
-embedding_model = None
-CHUNK_BY_ID = {}
+# ========================================
+# GET LATEST VERSION
+# ========================================
+def get_latest_version():
+    version_file = os.path.join(VECTORSTORE_DIR, "latest_version.txt")
+    if os.path.exists(version_file):
+        with open(version_file, "r") as f:
+            return f.read().strip()
+    return None
 
-try:
-    if os.path.exists(CHUNKS_METADATA_FILE) and os.path.exists(FAISS_INDEX_FILE):
+def get_versioned_paths(version):
+    """Get versioned file paths"""
+    return {
+        "faiss": os.path.join(VECTORSTORE_DIR, f"legal_index_{version}.faiss"),
+        "metadata": os.path.join(VECTORSTORE_DIR, f"index_metadata_{version}.json"),
+        "chunks": os.path.join(VECTORSTORE_DIR, f"chunks_metadata_{version}.json")
+    }
+
+# ========================================
+# LOAD VECTORSTORE WITH VERSIONING
+# ========================================
+def load_version(version=None):
+    global _current_version, _chunks, _index, _embedding_model, _chunk_by_id
+    global FAISS_INDEX_FILE, CHUNKS_METADATA_FILE, INDEX_METADATA_FILE
+    
+    if version is None:
+        version = get_latest_version()
+    
+    if not version:
+        print("⚠️ No version found. Vectorstore not initialized.")
+        return False
+    
+    # Check if already loaded
+    if _current_version == version and _index is not None:
+        return True
+    
+    paths = get_versioned_paths(version)
+    
+    if not all(os.path.exists(p) for p in paths.values()):
+        print(f"❌ Version {version} missing files")
+        return False
+    
+    try:
         # Load chunks metadata
-        with open(CHUNKS_METADATA_FILE, "r", encoding="utf-8") as f:
-            CHUNKS = json.load(f)
-
+        with open(paths["chunks"], "r", encoding="utf-8") as f:
+            _chunks = json.load(f)
+        
         # Load FAISS index
-        index = faiss.read_index(FAISS_INDEX_FILE)
-
-        # Load model
-        with open(INDEX_METADATA_FILE, "r", encoding="utf-8") as f:
+        _index = faiss.read_index(paths["faiss"])
+        
+        # Load index metadata
+        with open(paths["metadata"], "r", encoding="utf-8") as f:
             index_meta = json.load(f)
+        
         MODEL_NAME = index_meta["model_name"]
-        embedding_model = SentenceTransformer(MODEL_NAME)
+        _embedding_model = SentenceTransformer(MODEL_NAME)
+        
+        # Create fast lookup map
+        _chunk_by_id = {i: chunk for i, chunk in enumerate(_chunks)}
+        
+        # Update current version
+        _current_version = version
+        
+        # Set global file paths for compatibility
+        FAISS_INDEX_FILE = paths["faiss"]
+        CHUNKS_METADATA_FILE = paths["chunks"]
+        INDEX_METADATA_FILE = paths["metadata"]
+        
+        print(f"✅ Loaded version {version} | {len(_chunks)} chunks | {_index.ntotal} vectors")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Error loading version {version}: {e}")
+        return False
 
-        print(f"✅ Loaded {len(CHUNKS)} chunks | FAISS index: {index.ntotal} vectors")
-        print(f"📌 Model: {MODEL_NAME}")
+def check_and_reload():
+    """Check for new version and reload if needed"""
+    latest = get_latest_version()
+    if latest and latest != _current_version:
+        print(f"🔄 Detected new version: {latest} (current: {_current_version})")
+        return load_version(latest)
+    return True
 
-        # Tạo map nhanh từ index → chunk
-        CHUNK_BY_ID = {i: chunk for i, chunk in enumerate(CHUNKS)}
-    else:
-        print("⚠️ Vectorstore chưa tồn tại. Ứng dụng sẽ chạy ở chế độ fallback.")
-except Exception as e:
-    print(f"❌ Lỗi khi load vectorstore: {e}")
-    print("   → Hệ thống đang chạy ở chế độ hạn chế.")
+# ========================================
+# INITIAL LOAD
+# ========================================
+print("📥 Initializing search pipeline with versioning...")
+load_version()
 
 # ========================================
 # NORMALIZE TEXT
@@ -101,8 +162,12 @@ def legal_search(
 ):
     """
     Tìm kiếm văn bản pháp luật tốt nhất cho câu hỏi.
+    Supports hot-swap versioning.
     """
-    if not CHUNKS or index is None or embedding_model is None:
+    # Check for new version on each search
+    check_and_reload()
+    
+    if not _chunks or _index is None or _embedding_model is None:
         return {
             "status": "no_vectorstore",
             "message": "Hệ thống chưa được khởi tạo dữ liệu pháp luật. Vui lòng chạy pipeline trước.",
@@ -111,7 +176,7 @@ def legal_search(
         }
 
     # Embedding query
-    query_emb = embedding_model.encode(
+    query_emb = _embedding_model.encode(
         f"query: {query}",
         convert_to_numpy=True,
         normalize_embeddings=True,
@@ -119,7 +184,7 @@ def legal_search(
     ).astype(np.float32).reshape(1, -1)
 
     # FAISS Search
-    scores, indices = index.search(query_emb, top_k)
+    scores, indices = _index.search(query_emb, top_k)
     top1_score = float(scores[0][0]) if len(scores[0]) > 0 else 0.0
 
     # OOS Detection
@@ -140,7 +205,7 @@ def legal_search(
         if idx == -1 or score < threshold:
             continue
 
-        chunk = CHUNK_BY_ID.get(int(idx))
+        chunk = _chunk_by_id.get(int(idx))
         if not chunk:
             continue
 
@@ -176,13 +241,12 @@ def legal_search(
         "top1_score": round(top1_score, 4)
     }
 
-
 # ========================================
 # TEST FUNCTION
 # ========================================
 if __name__ == "__main__":
     print("\n" + "="*60)
-    print("🧪 TESTING LEGAL SEARCH")
+    print("🧪 TESTING LEGAL SEARCH (with versioning)")
     print("="*60)
     
     test_queries = [
