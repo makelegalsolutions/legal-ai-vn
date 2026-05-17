@@ -1,1 +1,98 @@
-{}
+{
+  "126-2014-NĐ-CP.pdf": {
+    "size": 531452,
+    "text_length": 36555,
+    "type": "pdf",
+    "validated_at": "1779023486.7039034"
+  },
+  "52-2010-QH12.pdf": {
+    "size": 351012,
+    "text_length": 31816,
+    "type": "pdf",
+    "validated_at": "1779023487.2868998"
+  },
+  "52-2014-QH13.pdf": {
+    "size": 621405,
+    "text_length": 36063,
+    "type": "pdf",
+    "validated_at": "1779023488.4088926"
+  },
+  "59-2020-QH14-67-VBHN-VPQH-2026.pdf": {
+    "size": 1328980,
+    "text_length": 35404,
+    "type": "pdf",
+    "validated_at": "1779023490.248881"
+  },
+  "64-2020-QH14-02-VBHN-VPQH-2022.pdf": {
+    "size": 736776,
+    "text_length": 29705,
+    "type": "pdf",
+    "validated_at": "1779023491.225875"
+  },
+  "168-2025-ND-CP.pdf": {
+    "size": 1175711,
+    "text_length": 32083,
+    "type": "pdf",
+    "validated_at": "1779023492.221869"
+  },
+  "47-2021-ND-CP.pdf": {
+    "size": 593767,
+    "text_length": 29025,
+    "type": "pdf",
+    "validated_at": "1779023493.5058613"
+  },
+  "22-2023-QH15-74-VBHN-VPQH-2026.pdf": {
+    "size": 1712414,
+    "text_length": 43610,
+    "type": "pdf",
+    "validated_at": "1779023494.9888523"
+  },
+  "106-2026-ND-CP.pdf": {
+    "size": 637922,
+    "text_length": 27981,
+    "type": "pdf",
+    "validated_at": "1779023495.6598482"
+  },
+  "102-2026-ND-CP.pdf": {
+    "size": 820609,
+    "text_length": 25628,
+    "type": "pdf",
+    "validated_at": "1779023496.9288406"
+  },
+  "126-2015-QH15.pdf": {
+    "size": 535138,
+    "text_length": 34677,
+    "type": "pdf",
+    "validated_at": "1779023497.837835"
+  },
+  "16-2026-NQ-CP.pdf": {
+    "size": 1158708,
+    "text_length": 38632,
+    "type": "pdf",
+    "validated_at": "1779023498.7268298"
+  },
+  "66.16-2016-NQ-CP.pdf": {
+    "size": 6276815,
+    "text_length": 34041,
+    "type": "pdf",
+    "validated_at": "1779023500.0398219"
+  },
+  "96-2026-ND-CP.pdf": {
+    "size": 1730545,
+    "text_length": 36022,
+    "type": "pdf",
+    "validated_at": "1779023501.5548127"
+  },
+  "103-2026-ND-CP.pdf": {
+    "size": 862376,
+    "text_length": 34982,
+    "type": "pdf",
+    "validated_at": "1779023502.3588078"
+  },
+  "143.2025.QH15.pdf": {
+    "size": 1167816,
+    "text_length": 31379,
+    "type": "pdf",
+    "validated_at": "1779023503.3698015"
+  }
+}
