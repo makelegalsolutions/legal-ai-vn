@@ -248,6 +248,29 @@ with open(os.path.join(VECTORSTORE_DIR, "latest_version.txt"), "w") as f:
 print(f"📌 Version {version} created for hot-swap")
 print(f"   → {VERSIONED_FAISS}")
 
+# ========================================
+# UPLOAD TO GOOGLE DRIVE (PHẦN THÊM MỚI)
+# ========================================
+try:
+    from .faiss_drive_manager import save_faiss_version_to_drive, clean_old_versions
+    
+    FAISS_DRIVE_FOLDER_ID = os.environ.get("FAISS_DRIVE_FOLDER_ID")
+    
+    if FAISS_DRIVE_FOLDER_ID:
+        print("\n📤 Uploading FAISS to Google Drive...")
+        uploaded_version = save_faiss_version_to_drive(FAISS_DRIVE_FOLDER_ID)
+        if uploaded_version:
+            print(f"✅ Uploaded version: {uploaded_version}")
+        
+        # Dọn dẹp version cũ (giữ 5 bản)
+        clean_old_versions(FAISS_DRIVE_FOLDER_ID, keep=5)
+    else:
+        print("⚠️ FAISS_DRIVE_FOLDER_ID not set, skipping Drive upload")
+except ImportError:
+    print("⚠️ faiss_drive_manager not found, skipping Drive upload")
+except Exception as e:
+    print(f"⚠️ Failed to upload to Drive: {e}")
+
 print("=" * 70)
 print("🎉 VECTOR PIPELINE HOÀN THÀNH!")
 print(f"📁 Vectorstore folder: {VECTORSTORE_DIR}")
