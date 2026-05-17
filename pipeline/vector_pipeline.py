@@ -5,6 +5,7 @@ import hashlib
 import numpy as np
 import faiss
 import torch
+import shutil
 from datetime import datetime
 from sentence_transformers import SentenceTransformer
 from tqdm import tqdm
@@ -226,6 +227,26 @@ faiss.write_index(index, FAISS_INDEX_FILE)
 
 print(f"✅ FAISS index saved: {FAISS_INDEX_FILE}")
 print(f"📊 Total vectors in index: {index.ntotal}")
+
+# ========================================
+# CREATE VERSIONED COPY FOR HOT-SWAP
+# ========================================
+version = datetime.now().strftime("%Y%m%d_%H%M%S")
+VERSIONED_FAISS = os.path.join(VECTORSTORE_DIR, f"legal_index_{version}.faiss")
+VERSIONED_METADATA = os.path.join(VECTORSTORE_DIR, f"index_metadata_{version}.json")
+VERSIONED_CHUNKS = os.path.join(VECTORSTORE_DIR, f"chunks_metadata_{version}.json")
+
+# Copy versioned files
+shutil.copy2(FAISS_INDEX_FILE, VERSIONED_FAISS)
+shutil.copy2(INDEX_METADATA_FILE, VERSIONED_METADATA)
+shutil.copy2(CHUNKS_METADATA_FILE, VERSIONED_CHUNKS)
+
+# Update latest version pointer
+with open(os.path.join(VECTORSTORE_DIR, "latest_version.txt"), "w") as f:
+    f.write(version)
+
+print(f"📌 Version {version} created for hot-swap")
+print(f"   → {VERSIONED_FAISS}")
 
 print("=" * 70)
 print("🎉 VECTOR PIPELINE HOÀN THÀNH!")
