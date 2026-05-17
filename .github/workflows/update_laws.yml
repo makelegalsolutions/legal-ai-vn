@@ -1,68 +1,93 @@
 name: Update Legal Documents
 
 on:
-
-  # Chạy tự động mỗi 30 phút
+  # Chạy tự động mỗi 6 giờ
   schedule:
-    - cron: '*/30 * * * *'
-
+    - cron: '0 */6 * * *'
   # Cho phép chạy thủ công
   workflow_dispatch:
 
-
 jobs:
-
   update-laws:
-
     runs-on: ubuntu-latest
+    timeout-minutes: 60
 
     env:
       DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
 
     steps:
-
       # ====================================
       # Checkout Repository
       # ====================================
-
       - name: Checkout repository
         uses: actions/checkout@v4
-
 
       # ====================================
       # Setup Python
       # ====================================
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-
       # ====================================
       # Install Requirements
       # ====================================
-
       - name: Install requirements
         run: |
           pip install -r requirements.txt
-
+          pip install pypdf2 python-docx pydrive2 sentence-transformers faiss-cpu google-generativeai
 
       # ====================================
       # Create Google Service Account File
       # ====================================
-
       - name: Create service account file
         run: |
           cat <<EOF > service_account.json
           ${{ secrets.GDRIVE_SERVICE_ACCOUNT }}
           EOF
 
-
       # ====================================
-      # Run Validation Pipeline
+      # Run Full Pipeline
       # ====================================
-
       - name: Run validation pipeline
         run: |
           python pipeline/validate_pipeline.py
+
+      - name: Run text processing
+        run: |
+          python pipeline/text_processing.py
+
+      - name: Run chunking pipeline
+        run: |
+          python pipeline/chunking_pipeline.py
+
+      - name: Run vector pipeline (create FAISS)
+        run: |
+          python pipeline/vector_pipeline.py
+
+      - name: Test search pipeline
+        run: |
+          python pipeline/search_pipeline.py
+
+      - name: Test LLM pipeline
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python pipeline/llm_pipeline.py
+
+      # ====================================
+      # Commit version files (not FAISS)
+      # ====================================
+      - name: Commit version files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/vectorstore/latest_version.txt
+          git add data/vectorstore/index_metadata_*.json
+          git add data/vectorstore/chunks_metadata_*.json
+          git add data/chunks/legal_chunks_latest.json
+          git add data/chunks/doc_relations_latest.json
+          git add data/state/processed_files.json
+          git commit -m "Auto update: $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
+          git push
