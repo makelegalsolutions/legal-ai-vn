@@ -28,14 +28,18 @@ jobs:
       - name: Commit clean state
         run: |
           git config user.name "github-actions[bot]"
-          git config.user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/
-          git commit -m "🧹 Clean: Reset data directory for fresh start" || echo "No changes"
+          git commit -m "🧹 Clean: Reset data directory for fresh start" || echo "No changes to commit"
           git push
       
       - name: Summary
         run: |
+          echo ""
           echo "=========================================="
           echo "✅ CLEAN COMPLETED"
           echo "=========================================="
+          echo "📅 Time: $(date)"
+          echo "📁 New data structure:"
           ls -la data/
+          echo "=========================================="
