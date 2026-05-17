@@ -108,7 +108,6 @@ def get_weather_detailed(city: str) -> dict:
                             cloudcover = hourly['cloudcover'][i]
                         break
             
-            # Xác định điều kiện thời tiết
             if temp == 'N/A':
                 condition = "N/A"
                 icon = "❓"
@@ -149,7 +148,6 @@ def get_weather_detailed(city: str) -> dict:
                 condition = "Có mây"
                 icon = "⛅"
             
-            # Hướng gió
             wind_text = ""
             if wind_dir != 'N/A':
                 if 0 <= wind_dir < 22.5 or 337.5 <= wind_dir <= 360:
@@ -257,6 +255,68 @@ def init_view_counter():
             pass
 
 # ========================================
+# TIỆN ÍCH 3: XỬ LÝ FILE ĐÍNH KÈM
+# ========================================
+def read_uploaded_file(uploaded_file):
+    """Đọc nội dung file đính kèm (PDF, DOCX, TXT)"""
+    if uploaded_file is None:
+        return ""
+    
+    try:
+        file_type = uploaded_file.type
+        file_name = uploaded_file.name
+        
+        if file_type == "text/plain" or file_name.endswith('.txt'):
+            return uploaded_file.read().decode("utf-8")
+        
+        elif file_type == "application/pdf" or file_name.endswith('.pdf'):
+            from PyPDF2 import PdfReader
+            import io
+            pdf_bytes = io.BytesIO(uploaded_file.read())
+            reader = PdfReader(pdf_bytes)
+            text = ""
+            for page in reader.pages:
+                page_text = page.extract_text()
+                if page_text:
+                    text += page_text + "\n"
+            return text[:5000]  # Giới hạn 5000 ký tự
+        
+        elif file_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document" or file_name.endswith('.docx'):
+            from docx import Document
+            import io
+            docx_bytes = io.BytesIO(uploaded_file.read())
+            doc = Document(docx_bytes)
+            text = "\n".join([p.text for p in doc.paragraphs])
+            return text[:5000]
+        
+        else:
+            return f"⚠️ Không hỗ trợ định dạng file: {file_type}"
+    
+    except Exception as e:
+        return f"❌ Lỗi đọc file: {str(e)}"
+
+def format_legal_citations(chunks):
+    """Định dạng căn cứ pháp lý từ các chunks trả về"""
+    citations = []
+    seen = set()
+    
+    for chunk in chunks:
+        # Tạo key duy nhất để tránh trùng lặp
+        key = f"{chunk.get('doc_id', '')}_{chunk.get('article', '')}"
+        if key in seen:
+            continue
+        seen.add(key)
+        
+        doc_id = chunk.get('doc_id', 'Không rõ')
+        article = chunk.get('article', 'Không rõ')
+        title = chunk.get('title', '')
+        text = chunk.get('text', '')[:300]  # Trích yếu 300 ký tự
+        
+        citations.append(f"""**{doc_id}**\n- Điều: {article}\n- Trích yếu: {text}...\n""")
+    
+    return citations
+
+# ========================================
 # IMPORT PIPELINE
 # ========================================
 from pipeline.config import check_api_keys, GEMINI_API_KEY
@@ -278,7 +338,7 @@ st.set_page_config(
 )
 
 # ========================================
-# CSS TÙY CHỈNH SIDEBAR
+# CSS TÙY CHỈNH
 # ========================================
 st.markdown("""
 <style>
@@ -288,20 +348,14 @@ st.markdown("""
         max-width: 380px;
     }
     
-    /* Style cho thông tin thời gian */
+    /* Style cho thời gian */
     .time-info {
         font-size: 1rem;
         line-height: 1.8;
         margin-bottom: 10px;
     }
     
-    /* Style cho thời tiết 3 cột - NỀN SÁNG */
-    .weather-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
-        margin-bottom: 15px;
-    }
+    /* Style cho thời tiết */
     .weather-card {
         background-color: #f0f2f6;
         padding: 10px 5px;
@@ -330,6 +384,34 @@ st.markdown("""
         font-size: 0.9rem;
         color: #1e1e1e;
     }
+    
+    /* Style cho chat input */
+    .stTextArea textarea {
+        font-size: 1rem;
+    }
+    
+    /* Style cho câu trả lời */
+    .answer-box {
+        background-color: #f0f7ff;
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 4px solid #0066cc;
+        margin-bottom: 20px;
+    }
+    
+    /* Style cho căn cứ pháp lý */
+    .legal-basis {
+        background-color: #f5f5f5;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 4px solid #28a745;
+        margin-top: 15px;
+    }
+    .legal-item {
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e0e0e0;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -339,20 +421,22 @@ st.markdown("""
 init_view_counter()
 load_history_from_file()
 
+# Khởi tạo session state cho chat
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+if "current_query" not in st.session_state:
+    st.session_state.current_query = ""
+
 # ========================================
 # SIDEBAR
 # ========================================
 with st.sidebar:
-    # Header
     st.title("⚖️ Legal AI VN")
     st.markdown("**Trợ lý Pháp luật Việt Nam**")
     st.divider()
     
-    # ========================================
     # TIỆN ÍCH 1: NGÀY GIỜ
-    # ========================================
     st.markdown("### 📅 Thông tin thời gian")
-    
     hanoi_time = get_hanoi_time()
     
     st.markdown(f"""
@@ -362,18 +446,12 @@ with st.sidebar:
         <b>📖 Âm lịch:</b> <span style="font-size: 1rem;">{get_lunar_date()}</span>
     </div>
     """, unsafe_allow_html=True)
-    
     st.divider()
     
-    # ========================================
-    # TIỆN ÍCH 2: THỜI TIẾT (3 CỘT - NỀN SÁNG)
-    # ========================================
+    # TIỆN ÍCH 2: THỜI TIẾT
     st.markdown("### 🌡️ Thời tiết hôm nay")
-    
     cities = ["Hà Nội", "Nha Trang", "TP. HCM"]
     weather_data = {city: get_weather_detailed(city) for city in cities}
-    
-    # Tạo 3 cột
     cols = st.columns(3)
     
     for idx, city in enumerate(cities):
@@ -394,11 +472,8 @@ with st.sidebar:
     st.caption("⏱️ Cập nhật mỗi 30 phút | Nguồn: Open-Meteo")
     st.divider()
     
-    # ========================================
     # TIỆN ÍCH 3: THỐNG KÊ
-    # ========================================
     st.markdown("### 📊 Thống kê")
-    
     col1, col2 = st.columns(2)
     with col1:
         st.metric("👁️ Lượt xem hôm nay", f"{st.session_state.view_count:,}")
@@ -407,14 +482,10 @@ with st.sidebar:
     
     if "history" in st.session_state:
         st.metric("❓ Câu hỏi đã hỏi", len(st.session_state.history))
-    
     st.divider()
     
-    # ========================================
-    # TIỆN ÍCH 4: LỊCH SỬ CÂU HỎI
-    # ========================================
+    # TIỆN ÍCH 4: LỊCH SỬ
     st.markdown("### 📜 Lịch sử câu hỏi")
-    
     if "history" in st.session_state and st.session_state.history:
         if st.button("🗑️ Xóa lịch sử", key="clear_history", use_container_width=True):
             st.session_state.history = []
@@ -429,18 +500,12 @@ with st.sidebar:
                 st.caption(f"**Trả lời:** {item['answer_preview']}...")
     else:
         st.info("💬 Chưa có câu hỏi nào")
-    
     st.divider()
     
-    # ========================================
     # KIỂM TRA HỆ THỐNG
-    # ========================================
     if st.button("🔑 Kiểm tra API Key", use_container_width=True):
         check_api_keys()
     
-    # ========================================
-    # DEBUG
-    # ========================================
     with st.expander("🔧 System Status"):
         data_paths = {
             "Chunks": "data/chunks/legal_chunks_latest.json",
@@ -448,7 +513,6 @@ with st.sidebar:
             "Version": "data/vectorstore/latest_version.txt",
             "State": "data/state/processed_files.json"
         }
-        
         for name, path in data_paths.items():
             if os.path.exists(path):
                 if path.endswith(".json"):
@@ -480,91 +544,125 @@ with st.sidebar:
 st.title("⚖️ Legal AI Việt Nam")
 st.markdown("Hỏi đáp pháp luật thông minh dựa trên văn bản gốc")
 
-tab1, tab2 = st.tabs(["💬 Tra cứu pháp luật", "ℹ️ Giới thiệu"])
+# ========================================
+# CHAT INTERFACE
+# ========================================
 
-with tab1:
-    with st.form(key="query_form"):
-        query = st.text_area(
-            "📝 Nhập câu hỏi của bạn:",
-            placeholder="Ví dụ: \n- Nghỉ thai sản được bao nhiêu tháng?\n- Điều kiện thành lập công ty TNHH là gì?\n- Mức phạt vượt đèn đỏ hiện nay?",
-            height=120
-        )
-        
-        col1, col2, col3 = st.columns([2, 1, 1])
-        with col1:
-            top_k = st.slider("📚 Số văn bản tham khảo", min_value=3, max_value=10, value=6)
-        with col2:
-            threshold = st.slider("🎯 Ngưỡng độ tin cậy", 0.30, 0.70, 0.45, step=0.01)
-        with col3:
-            submitted = st.form_submit_button("🔍 Tra cứu & Trả lời", type="primary", use_container_width=True)
+# Hiển thị lịch sử chat
+for msg in st.session_state.messages:
+    if msg["role"] == "user":
+        st.chat_message("user").write(msg["content"])
+    else:
+        with st.chat_message("assistant"):
+            st.markdown(msg["content"])
+
+# Chat input với enter và mũi tên lên
+query = st.chat_input("Nhập câu hỏi pháp luật của bạn...")
+
+# File uploader
+uploaded_file = st.file_uploader(
+    "📎 Đính kèm file (PDF, DOCX, TXT) - nội dung sẽ được thêm vào câu hỏi",
+    type=["pdf", "docx", "txt"],
+    help="Tải lên file văn bản để AI phân tích thêm"
+)
+
+# Xử lý khi có câu hỏi
+if query:
+    # Thêm câu hỏi vào lịch sử chat
+    st.session_state.messages.append({"role": "user", "content": query})
+    st.chat_message("user").write(query)
     
-    if submitted:
-        if not query or not query.strip():
-            st.warning("⚠️ Vui lòng nhập câu hỏi!")
-        elif not GEMINI_API_KEY:
-            st.error("❌ Chưa thiết lập GEMINI_API_KEY")
-        else:
-            with st.spinner("⚖️ Đang tra cứu..."):
-                start = time.time()
-                try:
-                    result = ask_legal_ai(
-                        query=query.strip(),
-                        top_k=top_k,
-                        threshold=threshold
-                    )
-                    latency = round(time.time() - start, 2)
-                    
-                    if result["status"] == "ok":
-                        st.success("✅ **Câu trả lời:**")
-                        st.markdown(result["answer"])
-                        
-                        save_to_history(query.strip(), result["answer"][:200])
-                        
-                        with st.expander("📚 Xem nguồn trích dẫn"):
-                            for i, chunk in enumerate(result.get("retrieved_chunks", []), 1):
-                                st.markdown(f"**{i}. {chunk.get('article', 'N/A')}**")
-                                st.caption(f"📄 {chunk.get('title', '')[:100]}...")
-                                st.caption(f"🎯 Độ tin cậy: {chunk.get('score', 0):.4f}")
-                                st.divider()
-                                
-                    elif result["status"] in ["out_of_scope", "no_result"]:
-                        st.warning(f"⚠️ {result.get('message', 'Không tìm thấy thông tin')}")
-                    else:
-                        st.error(f"❌ {result.get('message', 'Có lỗi xảy ra')}")
-                        
-                except Exception as e:
-                    st.error(f"❌ Lỗi: {str(e)}")
-                    latency = 0
+    # Xử lý file đính kèm
+    file_content = ""
+    if uploaded_file is not None:
+        file_content = read_uploaded_file(uploaded_file)
+        if file_content and not file_content.startswith(("⚠️", "❌")):
+            file_content = f"\n\n[Nội dung file đính kèm]:\n{file_content}\n"
+    
+    # Kết hợp câu hỏi với nội dung file
+    full_query = query + file_content if file_content else query
+    
+    # Kiểm tra API key
+    if not GEMINI_API_KEY:
+        response = "❌ Chưa thiết lập GEMINI_API_KEY. Vui lòng kiểm tra Settings → Secrets trên Streamlit Cloud."
+        st.session_state.messages.append({"role": "assistant", "content": response})
+        with st.chat_message("assistant"):
+            st.markdown(response)
+        st.rerun()
+    
+    # Gọi API
+    with st.spinner("⚖️ Đang tra cứu văn bản pháp luật và phân tích..."):
+        start = time.time()
+        try:
+            result = ask_legal_ai(
+                query=full_query.strip(),
+                top_k=6,
+                threshold=0.45
+            )
+            latency = round(time.time() - start, 2)
             
-            st.caption(f"⏱️ Thời gian: {latency} giây")
+            if result["status"] == "ok":
+                answer_text = result["answer"]
+                retrieved_chunks = result.get("retrieved_chunks", [])
+                
+                # Tách phần trả lời và căn cứ pháp lý
+                import re
+                # Tìm phần "CĂN CỨ PHÁP LÝ" trong câu trả lời gốc
+                legal_basis_section = ""
+                main_answer = answer_text
+                
+                if "CĂN CỨ PHÁP LÝ" in answer_text:
+                    parts = answer_text.split("CĂN CỨ PHÁP LÝ")
+                    main_answer = parts[0].strip()
+                    legal_basis_section = "CĂN CỨ PHÁP LÝ" + parts[1] if len(parts) > 1 else ""
+                
+                # Định dạng lại căn cứ pháp lý từ chunks
+                legal_citations = format_legal_citations(retrieved_chunks)
+                
+                # Xây dựng response
+                final_response = f"""**Trả lời:**
 
-with tab2:
-    st.markdown("""
-    ### 📖 Giới thiệu về Legal AI VN
+{main_answer}
+
+---
+**Căn cứ pháp lý:**
+
+"""
+                for citation in legal_citations[:5]:  # Tối đa 5 căn cứ
+                    final_response += f"\n{citation}\n"
+                
+                if not legal_citations:
+                    final_response += "\n*Không có trích dẫn cụ thể từ văn bản pháp luật.*\n"
+                
+                final_response += f"\n---\n⏱️ Thời gian xử lý: {latency} giây"
+                
+                # Lưu vào lịch sử
+                save_to_history(query, final_response[:200])
+                
+            elif result["status"] in ["out_of_scope", "no_result"]:
+                final_response = f"⚠️ {result.get('message', 'Không tìm thấy thông tin phù hợp.')}\n\n💡 Gợi ý: Hãy thử hỏi về các lĩnh vực như doanh nghiệp, lao động, hành chính..."
+            else:
+                final_response = f"❌ {result.get('message', 'Có lỗi xảy ra khi xử lý.')}"
+                
+        except Exception as e:
+            final_response = f"❌ Lỗi: {str(e)}"
+            latency = 0
     
-    **Legal AI VN** là trợ lý pháp luật thông minh sử dụng công nghệ **RAG** kết hợp với **Gemini** của Google.
+    # Hiển thị response
+    st.session_state.messages.append({"role": "assistant", "content": final_response})
+    with st.chat_message("assistant"):
+        st.markdown(final_response)
     
-    ---
-    
-    ### 🎯 Tính năng
-    
-    | Tính năng | Mô tả |
-    |-----------|-------|
-    | 🔍 Tra cứu thông minh | Tìm văn bản pháp luật liên quan |
-    | 📝 Trả lời chính xác | Dựa trên nội dung gốc, có trích dẫn |
-    | 🔄 Tự động cập nhật | Đồng bộ từ Drive và Congbao |
-    | 🌡️ Tiện ích bổ sung | Thời gian, thời tiết, lịch sử |
-    
-    ---
-    
-    ### ⚠️ Lưu ý
-    
-    > Thông tin chỉ mang tính **tham khảo**, không thay thế tư vấn pháp lý chính thức.
-    
-    ---
-    
-    **Phiên bản:** v1.0 | **Cập nhật:** 2026-05-18
-    """)
+    st.rerun()
+
+# ========================================
+# CLEAR CHAT BUTTON
+# ========================================
+col1, col2, col3 = st.columns([1, 1, 1])
+with col2:
+    if st.button("🗑️ Xóa lịch sử chat", use_container_width=True):
+        st.session_state.messages = []
+        st.rerun()
 
 # Footer
 st.divider()
