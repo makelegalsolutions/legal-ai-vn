@@ -17,7 +17,7 @@ from PyPDF2 import PdfReader
 DOWNLOAD_DIR = "data/downloads"
 STATE_FILE = "data/state/processed_files.json"
 
-MIN_TEXT_LENGTH = 200
+MIN_TEXT_LENGTH = 500  # Tối thiểu 500 ký tự text thực
 
 ALLOWED_EXTENSIONS = [
     ".pdf",
@@ -113,7 +113,7 @@ def integrity_check(filepath):
 
         size = os.path.getsize(filepath)
 
-        if size < 100:
+        if size < 10000:  # Ít nhất 10KB
 
             return False, "FILE TOO SMALL"
 
@@ -125,36 +125,14 @@ def integrity_check(filepath):
 
 
 # ========================================
-# VALIDATE DOCX
+# CHECK PDF HAS REAL TEXT (NOT SCAN)
 # ========================================
 
-def validate_docx(filepath):
-
-    try:
-
-        doc = Document(filepath)
-
-        text = "\n".join(
-            [p.text for p in doc.paragraphs]
-        )
-
-        if len(text.strip()) < MIN_TEXT_LENGTH:
-
-            return False, "EMPTY OR TOO SHORT DOCX"
-
-        return True, text
-
-    except Exception as e:
-
-        return False, str(e)
-
-
-# ========================================
-# VALIDATE PDF
-# ========================================
-
-def validate_pdf(filepath):
-
+def check_pdf_has_text(filepath: str, min_text_length: int = MIN_TEXT_LENGTH) -> tuple:
+    """
+    Kiểm tra PDF có text thực sự (không phải file scan)
+    Trả về: (is_valid, text_or_error)
+    """
     try:
 
         reader = PdfReader(filepath)
@@ -165,23 +143,85 @@ def validate_pdf(filepath):
 
         text = ""
 
-        for page in reader.pages:
+        for page in reader.pages[:15]:  # Kiểm tra 15 trang đầu
 
             extracted = page.extract_text()
 
             if extracted:
 
-                text += extracted
+                text += extracted + "\n"
 
-        if len(text.strip()) < MIN_TEXT_LENGTH:
+        if len(text.strip()) < min_text_length:
 
-            return False, "EMPTY PDF TEXT OR SCAN PDF"
+            return False, f"INSUFFICIENT TEXT ({len(text)} chars)"
 
         return True, text
 
     except Exception as e:
 
         return False, str(e)
+
+
+# ========================================
+# CHECK DOCX HAS REAL TEXT
+# ========================================
+
+def check_docx_has_text(filepath: str, min_text_length: int = MIN_TEXT_LENGTH) -> tuple:
+    """
+    Kiểm tra DOCX có text thực sự
+    Trả về: (is_valid, text_or_error)
+    """
+    try:
+
+        doc = Document(filepath)
+
+        paragraphs = [p.text for p in doc.paragraphs]
+
+        text = "\n".join(paragraphs)
+
+        if len(text.strip()) < min_text_length:
+
+            return False, f"INSUFFICIENT TEXT ({len(text)} chars)"
+
+        return True, text
+
+    except Exception as e:
+
+        return False, str(e)
+
+
+# ========================================
+# VALIDATE DOCX (full pipeline)
+# ========================================
+
+def validate_docx(filepath):
+
+    ok, result = check_docx_has_text(filepath)
+
+    if ok:
+
+        return True, result
+
+    else:
+
+        return False, result
+
+
+# ========================================
+# VALIDATE PDF (full pipeline)
+# ========================================
+
+def validate_pdf(filepath):
+
+    ok, result = check_pdf_has_text(filepath)
+
+    if ok:
+
+        return True, result
+
+    else:
+
+        return False, result
 
 
 # ========================================
@@ -201,6 +241,10 @@ SKIPPED_FILES = []
 # SCAN GOOGLE DRIVE
 # ========================================
 
+print("=" * 70)
+print("🔍 VALIDATION PIPELINE - GOOGLE DRIVE")
+print("=" * 70)
+
 query = (
     f"'{DRIVE_FOLDER_ID}' in parents "
     f"and trashed=false"
@@ -209,6 +253,8 @@ query = (
 DRIVE_FILES = DRIVE.ListFile(
     {'q': query}
 ).GetList()
+
+print(f"📁 Tìm thấy {len(DRIVE_FILES)} files trên Google Drive")
 
 
 # ========================================
@@ -223,50 +269,60 @@ for drive_file in DRIVE_FILES:
 
     if not is_valid_extension(original_name):
 
+        print(f"⏭️  Bỏ qua (không phải PDF/DOCX): {original_name}")
         continue
 
     file_size = int(
         drive_file.get("fileSize", 0)
     )
 
+    # Kiểm tra file đã xử lý chưa (dựa trên tên và kích thước)
     if original_name in PROCESSED:
 
         old_size = PROCESSED[
             original_name
-        ]["size"]
+        ].get("size", 0)
 
         if old_size == file_size:
 
-            SKIPPED_FILES.append(
-                original_name
-            )
-
+            print(f"⏭️  Bỏ qua (đã xử lý, không thay đổi): {original_name}")
+            SKIPPED_FILES.append(original_name)
             continue
+
+        else:
+            print(f"🔄 File thay đổi kích thước: {original_name} (cũ: {old_size}, mới: {file_size})")
 
     save_path = os.path.join(
         DOWNLOAD_DIR,
         original_name
     )
 
+    print(f"📥 Đang tải: {original_name} ({file_size} bytes)")
+
     drive_file.GetContentFile(save_path)
 
-    ALL_FILES.append(original_name)
+    ALL_FILES.append({
+        "filename": original_name,
+        "filepath": save_path,
+        "size": file_size
+    })
 
 
 # ========================================
 # PROCESS FILES
 # ========================================
 
-for filename in ALL_FILES:
+print("\n" + "=" * 70)
+print("🔬 ĐANG VALIDATE NỘI DUNG FILE...")
+print("=" * 70)
 
-    filepath = os.path.join(
-        DOWNLOAD_DIR,
-        filename
-    )
+for file_info in ALL_FILES:
 
-    file_size = os.path.getsize(
-        filepath
-    )
+    filename = file_info["filename"]
+    filepath = file_info["filepath"]
+    file_size = file_info["size"]
+
+    print(f"\n📄 Đang kiểm tra: {filename}")
 
     # =========================
     # FILE INTEGRITY CHECK
@@ -277,6 +333,8 @@ for filename in ALL_FILES:
     )
 
     if not ok:
+
+        print(f"   ❌ Integrity check failed: {message}")
 
         if filename.lower().endswith(
             ".docx"
@@ -296,6 +354,8 @@ for filename in ALL_FILES:
                 "error": message
             })
 
+        # Xóa file lỗi
+        os.remove(filepath)
         continue
 
     # =========================
@@ -312,21 +372,32 @@ for filename in ALL_FILES:
 
         if ok:
 
+            print(f"   ✅ DOCX hợp lệ - {len(result)} ký tự text")
+
             DOCX_OK.append({
                 "file": filename,
-                "size": file_size
+                "size": file_size,
+                "text_length": len(result)
             })
 
             PROCESSED[filename] = {
-                "size": file_size
+                "size": file_size,
+                "text_length": len(result),
+                "type": "docx",
+                "validated_at": str(Path(filepath).stat().st_mtime)
             }
 
         else:
+
+            print(f"   ❌ DOCX không hợp lệ: {result}")
 
             DOCX_ERROR.append({
                 "file": filename,
                 "error": result
             })
+
+            # Xóa file không hợp lệ
+            os.remove(filepath)
 
     # =========================
     # VALIDATE PDF
@@ -342,21 +413,32 @@ for filename in ALL_FILES:
 
         if ok:
 
+            print(f"   ✅ PDF hợp lệ - {len(result)} ký tự text")
+
             PDF_OK.append({
                 "file": filename,
-                "size": file_size
+                "size": file_size,
+                "text_length": len(result)
             })
 
             PROCESSED[filename] = {
-                "size": file_size
+                "size": file_size,
+                "text_length": len(result),
+                "type": "pdf",
+                "validated_at": str(Path(filepath).stat().st_mtime)
             }
 
         else:
+
+            print(f"   ❌ PDF không hợp lệ: {result}")
 
             PDF_ERROR.append({
                 "file": filename,
                 "error": result
             })
+
+            # Xóa file không hợp lệ
+            os.remove(filepath)
 
 
 # ========================================
@@ -381,35 +463,41 @@ with open(
 # FINAL REPORT
 # ========================================
 
-print("=" * 50)
-print("VALIDATION SUMMARY")
-print("=" * 50)
+print("\n" + "=" * 70)
+print("📊 VALIDATION SUMMARY")
+print("=" * 70)
 
-print(f"DOCX OK     : {len(DOCX_OK)}")
-print(f"PDF OK      : {len(PDF_OK)}")
+print(f"\n✅ HỢP LỆ:")
+print(f"   DOCX OK     : {len(DOCX_OK)} files")
+for item in DOCX_OK:
+    print(f"      - {item['file']} ({item['text_length']} chars)")
 
-print(f"DOCX ERROR  : {len(DOCX_ERROR)}")
-print(f"PDF ERROR   : {len(PDF_ERROR)}")
+print(f"   PDF OK      : {len(PDF_OK)} files")
+for item in PDF_OK:
+    print(f"      - {item['file']} ({item['text_length']} chars)")
 
-print(f"SKIPPED     : {len(SKIPPED_FILES)}")
+print(f"\n❌ LỖI:")
+print(f"   DOCX ERROR  : {len(DOCX_ERROR)} files")
+for item in DOCX_ERROR:
+    print(f"      - {item['file']}: {item['error']}")
 
+print(f"   PDF ERROR   : {len(PDF_ERROR)} files")
+for item in PDF_ERROR:
+    print(f"      - {item['file']}: {item['error']}")
 
-# ========================================
-# PRINT ERRORS
-# ========================================
+print(f"\n⏭️  BỎ QUA (đã xử lý trước): {len(SKIPPED_FILES)} files")
 
-if DOCX_ERROR:
+print(f"\n📁 Tổng số file hợp lệ trong state: {len(PROCESSED)}")
+print(f"📁 Thư mục downloads: {DOWNLOAD_DIR}")
 
-    print("\nDOCX ERRORS")
+# Thống kê theo loại
+docx_count = sum(1 for v in PROCESSED.values() if v.get("type") == "docx")
+pdf_count = sum(1 for v in PROCESSED.values() if v.get("type") == "pdf")
 
-    for item in DOCX_ERROR:
+print(f"\n📊 THỐNG KÊ STATE:")
+print(f"   DOCX: {docx_count}")
+print(f"   PDF : {pdf_count}")
 
-        print(item)
-
-if PDF_ERROR:
-
-    print("\nPDF ERRORS")
-
-    for item in PDF_ERROR:
-
-        print(item)
+print("\n" + "=" * 70)
+print("✅ VALIDATION PIPELINE HOÀN THÀNH!")
+print("=" * 70)
