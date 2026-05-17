@@ -31,6 +31,40 @@ _embedding_model = None
 _chunk_by_id = {}
 
 # ========================================
+# ENSURE FAISS AVAILABLE (TỪ LOCAL HOẶC DRIVE)
+# ========================================
+def ensure_faiss_available():
+    """Đảm bảo có FAISS index local, tải từ Drive nếu cần"""
+    local_index = os.path.join(VECTORSTORE_DIR, "legal_index.faiss")
+    
+    if os.path.exists(local_index) and os.path.getsize(local_index) > 0:
+        print("✅ FAISS found locally")
+        return True
+    
+    # Thử tải từ Drive
+    try:
+        from .faiss_drive_manager import load_faiss_version_from_drive, FAISS_DRIVE_FOLDER_ID
+        
+        # Lấy FAISS_DRIVE_FOLDER_ID từ environment variable
+        drive_folder_id = os.environ.get("FAISS_DRIVE_FOLDER_ID")
+        
+        if drive_folder_id:
+            print("📥 FAISS not found locally, downloading from Drive...")
+            if load_faiss_version_from_drive(drive_folder_id):
+                print("✅ FAISS downloaded from Drive successfully")
+                return True
+            else:
+                print("⚠️ Failed to download FAISS from Drive")
+        else:
+            print("⚠️ FAISS_DRIVE_FOLDER_ID not set, cannot load from Drive")
+    except ImportError:
+        print("⚠️ faiss_drive_manager not found, using local FAISS only")
+    except Exception as e:
+        print(f"⚠️ Failed to load from Drive: {e}")
+    
+    return False
+
+# ========================================
 # GET LATEST VERSION
 # ========================================
 def get_latest_version():
@@ -54,6 +88,9 @@ def get_versioned_paths(version):
 def load_version(version=None):
     global _current_version, _chunks, _index, _embedding_model, _chunk_by_id
     global FAISS_INDEX_FILE, CHUNKS_METADATA_FILE, INDEX_METADATA_FILE
+    
+    # Đảm bảo có FAISS local trước khi load
+    ensure_faiss_available()
     
     if version is None:
         version = get_latest_version()
@@ -162,7 +199,7 @@ def legal_search(
 ):
     """
     Tìm kiếm văn bản pháp luật tốt nhất cho câu hỏi.
-    Supports hot-swap versioning.
+    Supports hot-swap versioning and auto-download from Drive.
     """
     # Check for new version on each search
     check_and_reload()
@@ -241,13 +278,38 @@ def legal_search(
         "top1_score": round(top1_score, 4)
     }
 
+
+# ========================================
+# EXPORT FUNCTION FOR STATUS CHECK
+# ========================================
+def get_search_status():
+    """Trả về trạng thái hiện tại của search pipeline"""
+    return {
+        "has_chunks": len(_chunks) > 0 if _chunks else False,
+        "has_index": _index is not None,
+        "has_model": _embedding_model is not None,
+        "current_version": _current_version,
+        "total_chunks": len(_chunks) if _chunks else 0,
+        "vectorstore_dir": VECTORSTORE_DIR
+    }
+
+
 # ========================================
 # TEST FUNCTION
 # ========================================
 if __name__ == "__main__":
     print("\n" + "="*60)
-    print("🧪 TESTING LEGAL SEARCH (with versioning)")
+    print("🧪 TESTING LEGAL SEARCH (with versioning + Drive support)")
     print("="*60)
+    
+    # Kiểm tra trạng thái
+    status = get_search_status()
+    print(f"\n📊 Search Pipeline Status:")
+    print(f"   Chunks loaded: {status['has_chunks']}")
+    print(f"   FAISS index: {status['has_index']}")
+    print(f"   Model loaded: {status['has_model']}")
+    print(f"   Current version: {status['current_version']}")
+    print(f"   Total chunks: {status['total_chunks']}")
     
     test_queries = [
         "Điều kiện để được nghỉ thai sản là gì?",
