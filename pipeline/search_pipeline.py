@@ -5,6 +5,7 @@ import unicodedata
 import numpy as np
 import faiss
 from sentence_transformers import SentenceTransformer
+from pathlib import Path
 
 # ========================================
 # CONFIG
@@ -22,29 +23,40 @@ RETRIEVAL_THRESHOLD = 0.45
 MAX_RETURN_TEXT_CHARS = 500
 
 # ========================================
-# LOAD VECTORSTORE
+# LOAD VECTORSTORE WITH SAFE HANDLING
 # ========================================
 print("📥 Đang load FAISS index và metadata...")
 
-# Load chunks metadata
-with open(CHUNKS_METADATA_FILE, "r", encoding="utf-8") as f:
-    CHUNKS = json.load(f)
+CHUNKS = []
+index = None
+embedding_model = None
+CHUNK_BY_ID = {}
 
-# Load FAISS index
-index = faiss.read_index(FAISS_INDEX_FILE)
+try:
+    if os.path.exists(CHUNKS_METADATA_FILE) and os.path.exists(FAISS_INDEX_FILE):
+        # Load chunks metadata
+        with open(CHUNKS_METADATA_FILE, "r", encoding="utf-8") as f:
+            CHUNKS = json.load(f)
 
-# Load model (dùng cùng model với embedding)
-with open(INDEX_METADATA_FILE, "r", encoding="utf-8") as f:
-    index_meta = json.load(f)
+        # Load FAISS index
+        index = faiss.read_index(FAISS_INDEX_FILE)
 
-MODEL_NAME = index_meta["model_name"]
-embedding_model = SentenceTransformer(MODEL_NAME)
+        # Load model
+        with open(INDEX_METADATA_FILE, "r", encoding="utf-8") as f:
+            index_meta = json.load(f)
+        MODEL_NAME = index_meta["model_name"]
+        embedding_model = SentenceTransformer(MODEL_NAME)
 
-print(f"✅ Loaded {len(CHUNKS)} chunks | FAISS index: {index.ntotal} vectors")
-print(f"📌 Model: {MODEL_NAME}")
+        print(f"✅ Loaded {len(CHUNKS)} chunks | FAISS index: {index.ntotal} vectors")
+        print(f"📌 Model: {MODEL_NAME}")
 
-# Tạo map nhanh từ index → chunk
-CHUNK_BY_ID = {i: chunk for i, chunk in enumerate(CHUNKS)}
+        # Tạo map nhanh từ index → chunk
+        CHUNK_BY_ID = {i: chunk for i, chunk in enumerate(CHUNKS)}
+    else:
+        print("⚠️ Vectorstore chưa tồn tại. Ứng dụng sẽ chạy ở chế độ fallback.")
+except Exception as e:
+    print(f"❌ Lỗi khi load vectorstore: {e}")
+    print("   → Hệ thống đang chạy ở chế độ hạn chế.")
 
 # ========================================
 # NORMALIZE TEXT
@@ -59,7 +71,7 @@ def normalize_text(text: str) -> str:
     return text
 
 # ========================================
-# DOMAIN & OOS (có thể mở rộng sau)
+# OOS KEYWORDS
 # ========================================
 OOS_KEYWORDS = [
     "thai sản", "bảo hiểm xã hội", "hợp đồng lao động", "nghỉ việc",
@@ -67,20 +79,16 @@ OOS_KEYWORDS = [
     "di chúc", "thừa kế", "lừa đảo", "đánh nhau", "ly hôn"
 ]
 
-def detect_out_of_scope(query: str, query_emb, top1_score: float):
+def detect_out_of_scope(query: str, query_emb=None, top1_score: float = 0.0):
     q_norm = normalize_text(query)
-
-    # Keyword filter
     for kw in OOS_KEYWORDS:
         if kw in q_norm:
             return True, f"Câu hỏi thuộc lĩnh vực chưa được hỗ trợ ({kw})."
-
-    # Top1 score filter
-    if top1_score < STRICT_TOP1_THRESHOLD:
+    
+    if top1_score < STRICT_TOP1_THRESHOLD and top1_score > 0:
         return True, f"Không tìm thấy căn cứ pháp lý đủ tin cậy (score={top1_score:.3f})."
-
+    
     return False, ""
-
 
 # ========================================
 # MAIN LEGAL SEARCH FUNCTION
@@ -94,6 +102,14 @@ def legal_search(
     """
     Tìm kiếm văn bản pháp luật tốt nhất cho câu hỏi.
     """
+    if not CHUNKS or index is None or embedding_model is None:
+        return {
+            "status": "no_vectorstore",
+            "message": "Hệ thống chưa được khởi tạo dữ liệu pháp luật. Vui lòng chạy pipeline trước.",
+            "results": [],
+            "top1_score": 0.0
+        }
+
     # Embedding query
     query_emb = embedding_model.encode(
         f"query: {query}",
@@ -104,7 +120,6 @@ def legal_search(
 
     # FAISS Search
     scores, indices = index.search(query_emb, top_k)
-
     top1_score = float(scores[0][0]) if len(scores[0]) > 0 else 0.0
 
     # OOS Detection
