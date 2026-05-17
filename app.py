@@ -12,7 +12,14 @@ import time
 
 # Import từ pipeline
 from pipeline.config import check_api_keys, GEMINI_API_KEY
-from pipeline.llm_pipeline import ask_legal_ai
+
+# ==================== SỬA: import có xử lý lỗi ====================
+try:
+    from pipeline.llm_pipeline import ask_legal_ai
+except Exception as e:
+    st.error(f"Lỗi khởi tạo pipeline: {str(e)}")
+    st.stop()
+# =====================================================================
 
 # ========================================
 # PAGE CONFIG
