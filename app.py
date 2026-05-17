@@ -1,6 +1,45 @@
 import sys
 from pathlib import Path
+# Thêm ngay sau các import
+import os
+import json
 
+# ==================== DEBUG: KIỂM TRA DỮ LIỆU ====================
+st.sidebar.title("🔧 System Status")
+
+# Kiểm tra thư mục data
+data_paths = {
+    "Chunks file": "data/chunks/legal_chunks_latest.json",
+    "FAISS index": "data/vectorstore/legal_index.faiss",
+    "Latest version": "data/vectorstore/latest_version.txt",
+    "Processed files": "data/state/processed_files.json"
+}
+
+for name, path in data_paths.items():
+    if os.path.exists(path):
+        if path.endswith(".json"):
+            try:
+                with open(path, "r") as f:
+                    data = json.load(f)
+                    size = len(data) if isinstance(data, list) else len(data.keys())
+                st.sidebar.success(f"✅ {name}: {size} items")
+            except:
+                st.sidebar.success(f"✅ {name}: exists")
+        else:
+            size = os.path.getsize(path) / 1024 / 1024  # MB
+            st.sidebar.success(f"✅ {name}: {size:.1f} MB")
+    else:
+        st.sidebar.error(f"❌ {name}: NOT FOUND")
+
+# Kiểm tra version
+version_file = "data/vectorstore/latest_version.txt"
+if os.path.exists(version_file):
+    with open(version_file, "r") as f:
+        version = f.read().strip()
+    st.sidebar.info(f"📌 Current version: {version}")
+else:
+    st.sidebar.warning("⚠️ No version file found")
+# =================================================================
 # ==================== FIX IMPORT CHO STREAMLIT CLOUD ====================
 # Thêm đường dẫn để Python tìm được thư mục pipeline
 BASE_DIR = Path(__file__).parent.absolute()
