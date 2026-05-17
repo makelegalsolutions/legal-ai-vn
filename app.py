@@ -1,10 +1,19 @@
 import sys
 from pathlib import Path
-# Thêm ngay sau các import
 import os
 import json
 
+# ==================== FIX IMPORT CHO STREAMLIT CLOUD ====================
+# Thêm đường dẫn để Python tìm được thư mục pipeline
+BASE_DIR = Path(__file__).parent.absolute()
+sys.path.insert(0, str(BASE_DIR))
+# =====================================================================
+
+import streamlit as st
+import time
+
 # ==================== DEBUG: KIỂM TRA DỮ LIỆU ====================
+# Phần này phải đặt SAU khi import st
 st.sidebar.title("🔧 System Status")
 
 # Kiểm tra thư mục data
@@ -40,14 +49,6 @@ if os.path.exists(version_file):
 else:
     st.sidebar.warning("⚠️ No version file found")
 # =================================================================
-# ==================== FIX IMPORT CHO STREAMLIT CLOUD ====================
-# Thêm đường dẫn để Python tìm được thư mục pipeline
-BASE_DIR = Path(__file__).parent.absolute()
-sys.path.insert(0, str(BASE_DIR))
-# =====================================================================
-
-import streamlit as st
-import time
 
 # Import từ pipeline
 from pipeline.config import check_api_keys, GEMINI_API_KEY
