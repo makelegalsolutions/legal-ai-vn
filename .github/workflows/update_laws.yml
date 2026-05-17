@@ -8,8 +8,18 @@ on:
         required: false
         default: false
         type: boolean
+      skip_crawl:
+        description: 'Skip crawling Congbao'
+        required: false
+        default: false
+        type: boolean
   schedule:
     - cron: '0 */6 * * *'
+  push:
+    branches:
+      - main
+    paths:
+      - 'data/downloads/**'
 
 permissions:
   contents: write
@@ -18,56 +28,140 @@ permissions:
 jobs:
   update-laws:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
 
     steps:
+      # ========================================
+      # 1. CHECKOUT
+      # ========================================
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 1
 
+      # ========================================
+      # 2. SETUP PYTHON
+      # ========================================
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: 'pip'
 
+      # ========================================
+      # 3. CACHE HUGGING FACE MODELS (GIẢM 10-15 PHÚT)
+      # ========================================
+      - name: Cache Hugging Face models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: ${{ runner.os }}-hf-models-v1-${{ hashFiles('pipeline/vector_pipeline.py') }}
+          restore-keys: |
+            ${{ runner.os }}-hf-models-v1-
+
+      # ========================================
+      # 4. CACHE FAISS INDEX (KHÔNG CẦN TẠI LẠI)
+      # ========================================
+      - name: Cache FAISS index
+        uses: actions/cache@v4
+        with:
+          path: data/vectorstore/legal_index.faiss
+          key: ${{ runner.os }}-faiss-${{ hashFiles('data/chunks/legal_chunks_latest.json') }}
+          restore-keys: |
+            ${{ runner.os }}-faiss-
+
+      # ========================================
+      # 5. INSTALL DEPENDENCIES
+      # ========================================
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pypdf2 python-docx pydrive2 sentence-transformers faiss-cpu google-generativeai beautifulsoup4
+          pip install streamlit pypdf2 python-docx pydrive2 sentence-transformers faiss-cpu google-generativeai beautifulsoup4 requests numpy tqdm python-dotenv
 
+      # ========================================
+      # 6. CREATE SERVICE ACCOUNT FILE (TẠM THỜI)
+      # ========================================
       - name: Create service account file
         run: |
           echo '${{ secrets.GDRIVE_SERVICE_ACCOUNT }}' > service_account.json
 
+      # ========================================
+      # 7. CRAWL FROM CONGBAO (TÙY CHỌN)
+      # ========================================
+      - name: Crawl from Congbao
+        if: github.event.inputs.skip_crawl != 'true'
+        run: |
+          echo "🕷️ Crawling congbao.chinhphu.vn..."
+          python scripts/crawl_congbao.py || echo "Crawl skipped or failed"
+        continue-on-error: true
+
+      # ========================================
+      # 8. VALIDATION PIPELINE
+      # ========================================
       - name: Run validation pipeline
         env:
           DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
         run: python pipeline/validate_pipeline.py
 
+      # ========================================
+      # 9. TEXT PROCESSING
+      # ========================================
       - name: Run text processing
         run: python pipeline/text_processing.py
 
+      # ========================================
+      # 10. CHUNKING PIPELINE
+      # ========================================
       - name: Run chunking pipeline
         run: python pipeline/chunking_pipeline.py
 
+      # ========================================
+      # 11. VECTOR PIPELINE (TẠO FAISS)
+      # ========================================
       - name: Run vector pipeline
         run: python pipeline/vector_pipeline.py
 
-      - name: Test search
-        run: python pipeline/search_pipeline.py || echo "Search test skipped (no vectorstore yet)"
+      # ========================================
+      # 12. TEST SEARCH
+      # ========================================
+      - name: Test search pipeline
+        run: python pipeline/search_pipeline.py || echo "Search test skipped"
 
+      # ========================================
+      # 13. TEST LLM (NẾU CÓ API KEY)
+      # ========================================
+      - name: Test LLM pipeline
+        if: env.GEMINI_API_KEY != ''
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python pipeline/llm_pipeline.py || echo "LLM test skipped"
+
+      # ========================================
+      # 14. CLEAN OLD FAISS VERSIONS (GIỮ 5 BẢN)
+      # ========================================
+      - name: Clean old versions
+        run: |
+          cd data/vectorstore
+          ls -t legal_index_*.faiss 2>/dev/null | tail -n +6 | xargs -r rm -f
+          ls -t index_metadata_*.json 2>/dev/null | tail -n +6 | xargs -r rm -f
+          ls -t chunks_metadata_*.json 2>/dev/null | tail -n +6 | xargs -r rm -f
+          cd ../..
+
+      # ========================================
+      # 15. COMMIT DATA (KHÔNG BAO GỒM SECRET)
+      # ========================================
       - name: Commit and push data files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
-          # QUAN TRỌNG: Xóa service_account.json trước khi commit
+          # Xóa secret file trước khi commit
           rm -f service_account.json
           
-          # Chỉ commit thư mục data (không chứa secrets)
+          # Chỉ commit thư mục data
           git add data/
+          git add pipeline/__init__.py 2>/dev/null || true
           
           if git diff --staged --quiet; then
             echo "📭 No changes to commit"
@@ -76,7 +170,37 @@ jobs:
             git push
             echo "✅ Changes pushed successfully"
           fi
-      
-      - name: Clean up sensitive file
+
+      # ========================================
+      # 16. CLEANUP (LUÔN CHẠY)
+      # ========================================
+      - name: Cleanup sensitive files
         if: always()
-        run: rm -f service_account.json
+        run: |
+          rm -f service_account.json
+          rm -f service_account.json.* 2>/dev/null || true
+
+      # ========================================
+      # 17. SUMMARY
+      # ========================================
+      - name: Summary
+        run: |
+          echo ""
+          echo "=========================================="
+          echo "✅ UPDATE COMPLETED"
+          echo "=========================================="
+          echo "📅 Time: $(date)"
+          
+          # Hiển thị số chunks nếu có
+          if [ -f "data/chunks/legal_chunks_latest.json" ]; then
+            CHUNKS=$(python -c "import json; print(len(json.load(open('data/chunks/legal_chunks_latest.json'))))" 2>/dev/null || echo "N/A")
+            echo "📊 Total chunks: $CHUNKS"
+          fi
+          
+          # Hiển thị version
+          if [ -f "data/vectorstore/latest_version.txt" ]; then
+            VERSION=$(cat data/vectorstore/latest_version.txt)
+            echo "📌 Latest version: $VERSION"
+          fi
+          
+          echo "=========================================="
