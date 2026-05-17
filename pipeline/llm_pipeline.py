@@ -1,18 +1,24 @@
 import os
 import json
 import uuid
-from typing import Dict, List, Optional
+from typing import Dict, List
 from pathlib import Path
 
 import google.generativeai as genai
 
-# Import từ các pipeline trước
-from search_pipeline import legal_search
+# ====================== FIX IMPORT ======================
+# Dùng relative import để chạy trên Streamlit Cloud
+try:
+    from .search_pipeline import legal_search
+except ImportError:
+    # Fallback cho trường hợp chạy local hoặc test
+    from search_pipeline import legal_search
+# =======================================================
 
 # ========================================
 # CONFIG
 # ========================================
-MODEL_NAME = "gemini-2.5-flash"          # Hoặc gemini-1.5-pro nếu muốn chất lượng cao hơn
+MODEL_NAME = "gemini-2.5-flash"          # Hoặc gemini-1.5-pro
 MAX_CONTEXT_CHARS = 12000
 DEFAULT_TOP_K = 6
 DEFAULT_THRESHOLD = 0.45
@@ -22,14 +28,17 @@ TEMPERATURE = 0.1
 # LOAD API KEY từ config
 # ========================================
 try:
-    from config import GEMINI_API_KEY
+    from .config import GEMINI_API_KEY
 except ImportError:
-    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+    try:
+        from config import GEMINI_API_KEY
+    except ImportError:
+        GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 if not GEMINI_API_KEY:
     raise EnvironmentError(
         "❌ GEMINI_API_KEY chưa được thiết lập.\n"
-        "Vui lòng kiểm tra file .env hoặc config.py"
+        "Vui lòng kiểm tra file .env hoặc Settings → Secrets trên Streamlit Cloud."
     )
 
 genai.configure(api_key=GEMINI_API_KEY)
@@ -65,7 +74,7 @@ NGUYÊN TẮC BẮT BUỘC:
 - Nếu CONTEXT không đủ → phải nói rõ.
 - Trích dẫn chính xác số Điều, Khoản, văn bản.
 - Viết ngắn gọn, rõ ràng, dễ hiểu cho người dân.
-- Không đưa ra lời khuyên pháp lý tuyệt đối (phải có lưu ý).
+- Không đưa ra lời khuyên pháp lý tuyệt đối.
 
 Hãy trả về JSON hợp lệ theo format sau:
 {
@@ -132,7 +141,6 @@ def safe_parse_json(text: str) -> Dict:
     try:
         return json.loads(text)
     except:
-        # Thử xóa markdown
         cleaned = text.replace("```json", "").replace("```", "").strip()
         try:
             return json.loads(cleaned)
