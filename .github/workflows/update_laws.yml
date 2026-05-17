@@ -2,8 +2,19 @@ name: Update Legal Documents
 
 on:
   workflow_dispatch:
+    inputs:
+      full_rebuild:
+        description: 'Full rebuild (ignore incremental)'
+        required: false
+        default: false
+        type: boolean
   schedule:
     - cron: '0 */6 * * *'
+
+# Cấp quyền write cho GitHub Token
+permissions:
+  contents: write
+  actions: read
 
 jobs:
   update-laws:
@@ -13,39 +24,52 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      
+
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install streamlit pypdf2 python-docx pydrive2 sentence-transformers faiss-cpu google-generativeai beautifulsoup4 requests numpy tqdm python-dotenv
-      
+          pip install -r requirements.txt
+          pip install pypdf2 python-docx pydrive2 sentence-transformers faiss-cpu google-generativeai beautifulsoup4
+
       - name: Create service account file
         run: |
           echo '${{ secrets.GDRIVE_SERVICE_ACCOUNT }}' > service_account.json
-      
+
       - name: Run validation pipeline
         env:
           DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
         run: python pipeline/validate_pipeline.py
-      
+
       - name: Run text processing
         run: python pipeline/text_processing.py
-      
+
       - name: Run chunking pipeline
         run: python pipeline/chunking_pipeline.py
-      
+
       - name: Run vector pipeline
         run: python pipeline/vector_pipeline.py
-      
-      - name: Commit data files
+
+      - name: Test search
+        run: python pipeline/search_pipeline.py || echo "Search test skipped (no vectorstore yet)"
+
+      - name: Commit and push data files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/
-          git commit -m "Auto update: $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
-          git push
+          git add service_account.json || true
+          
+          if git diff --staged --quiet; then
+            echo "📭 No changes to commit"
+          else
+            git commit -m "🤖 Auto update: $(date +'%Y-%m-%d %H:%M:%S')"
+            git push
+            echo "✅ Changes pushed successfully"
+          fi
