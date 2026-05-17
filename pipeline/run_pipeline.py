@@ -16,8 +16,8 @@ steps = [
     ("2. Text Processing",   "text_processing.py"),
     ("3. Chunking",          "chunking_pipeline.py"),
     ("4. Vector Embedding",  "vector_pipeline.py"),
-    ("5. Search",            "search_pipeline.py"),      # Test search
-    ("6. LLM",               "llm_pipeline.py"),         # Test LLM
+    ("5. Search",            "search_pipeline.py"),
+    ("6. LLM",               "llm_pipeline.py"),
     ("7. Evaluation",        "evaluation.py"),
 ]
 
