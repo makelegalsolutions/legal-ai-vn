@@ -11,7 +11,6 @@ on:
   schedule:
     - cron: '0 */6 * * *'
 
-# Cấp quyền write cho GitHub Token
 permissions:
   contents: write
   actions: read
@@ -63,8 +62,12 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # QUAN TRỌNG: Xóa service_account.json trước khi commit
+          rm -f service_account.json
+          
+          # Chỉ commit thư mục data (không chứa secrets)
           git add data/
-          git add service_account.json || true
           
           if git diff --staged --quiet; then
             echo "📭 No changes to commit"
@@ -73,3 +76,7 @@ jobs:
             git push
             echo "✅ Changes pushed successfully"
           fi
+      
+      - name: Clean up sensitive file
+        if: always()
+        run: rm -f service_account.json
