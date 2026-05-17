@@ -9,11 +9,12 @@ load_dotenv(env_path)
 # ========================================
 # API KEYS
 # ========================================
-GEMINI_API_KEY = os.getenv("AIzaSyBADYaZOrCLKBOb6AH-WjYZuHTBSHPHMpg")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")  # ĐÃ SỬA - không hardcode
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 def check_api_keys():
+    """Kiểm tra trạng thái API keys - chỉ in ra nếu chạy trực tiếp"""
     print("=" * 60)
     print("🔑 API KEY STATUS")
     print("=" * 60)
@@ -26,8 +27,7 @@ def check_api_keys():
     
     print("=" * 60)
 
-# Auto check khi import
+# ĐÃ SỬA: Không tự động chạy check_api_keys() khi import
+# Chỉ chạy khi file được thực thi trực tiếp
 if __name__ == "__main__":
-    check_api_keys()
-else:
     check_api_keys()
