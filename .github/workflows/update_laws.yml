@@ -1,200 +1,51 @@
 name: Update Legal Documents
 
 on:
-  # Chạy tự động mỗi 6 giờ
+  workflow_dispatch:
   schedule:
     - cron: '0 */6 * * *'
-  
-  # Chạy mỗi ngày lúc 2:00 AM (giờ UTC)
-  - cron: '0 2 * * *'
-  
-  # Cho phép chạy thủ công từ GitHub UI
-  workflow_dispatch:
-    inputs:
-      force_rebuild:
-        description: 'Force rebuild entire index (ignore existing)'
-        required: false
-        default: false
-        type: boolean
-      max_crawl_pages:
-        description: 'Max pages to crawl from Congbao'
-        required: false
-        default: 5
-        type: number
 
 jobs:
   update-laws:
     runs-on: ubuntu-latest
-    timeout-minutes: 90  # Tăng timeout vì có crawl + pipeline
-
-    env:
-      DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+    timeout-minutes: 60
 
     steps:
-      # ========================================
-      # 1. CHECKOUT CODE
-      # ========================================
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # ========================================
-      # 2. SETUP PYTHON
-      # ========================================
+      
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip'
-
-      # ========================================
-      # 3. INSTALL DEPENDENCIES
-      # ========================================
+      
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pypdf2 python-docx pydrive2 sentence-transformers faiss-cpu
-          pip install google-generativeai google-auth google-auth-httplib2
-          pip install google-api-python-client beautifulsoup4 requests
-
-      # ========================================
-      # 4. CREATE SERVICE ACCOUNT FILE
-      # ========================================
-      - name: Create Google Drive service account
+          pip install streamlit pypdf2 python-docx pydrive2 sentence-transformers faiss-cpu google-generativeai beautifulsoup4 requests numpy tqdm python-dotenv
+      
+      - name: Create service account file
         run: |
-          cat <<EOF > service_account.json
-          ${{ secrets.GDRIVE_SERVICE_ACCOUNT }}
-          EOF
-
-      # ========================================
-      # 5. CRAWL FROM CONGBAO.CHINHPHU.VN
-      # ========================================
-      - name: Crawl new documents from Congbao
-        run: |
-          echo "🕷️ Starting crawl from Congbao..."
-          python scripts/crawl_congbao.py
-        continue-on-error: false
-
-      # ========================================
-      # 6. VALIDATION PIPELINE (Google Drive + new files)
-      # ========================================
+          echo '${{ secrets.GDRIVE_SERVICE_ACCOUNT }}' > service_account.json
+      
       - name: Run validation pipeline
-        run: |
-          echo "🔍 Validating all documents (Drive + new crawls)..."
-          python pipeline/validate_pipeline.py
-
-      # ========================================
-      # 7. TEXT PROCESSING
-      # ========================================
+        env:
+          DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
+        run: python pipeline/validate_pipeline.py
+      
       - name: Run text processing
-        run: |
-          echo "📝 Extracting text from valid documents..."
-          python pipeline/text_processing.py
-
-      # ========================================
-      # 8. CHUNKING PIPELINE
-      # ========================================
+        run: python pipeline/text_processing.py
+      
       - name: Run chunking pipeline
-        run: |
-          echo "✂️ Chunking documents into articles..."
-          python pipeline/chunking_pipeline.py
-
-      # ========================================
-      # 9. VECTOR PIPELINE (Create FAISS)
-      # ========================================
+        run: python pipeline/chunking_pipeline.py
+      
       - name: Run vector pipeline
-        run: |
-          echo "🧮 Creating embeddings and FAISS index..."
-          python pipeline/vector_pipeline.py
-
-      # ========================================
-      # 10. TEST SEARCH PIPELINE
-      # ========================================
-      - name: Test search pipeline
-        run: |
-          echo "🔎 Testing search functionality..."
-          python pipeline/search_pipeline.py
-
-      # ========================================
-      # 11. TEST LLM PIPELINE (if API key exists)
-      # ========================================
-      - name: Test LLM pipeline
-        if: env.GEMINI_API_KEY != ''
-        run: |
-          echo "🤖 Testing LLM with sample queries..."
-          python pipeline/llm_pipeline.py
-
-      # ========================================
-      # 12. RUN EVALUATION (optional)
-      # ========================================
-      - name: Run evaluation
-        if: env.GEMINI_API_KEY != ''
-        run: |
-          echo "📊 Running evaluation..."
-          python pipeline/evaluation.py
-
-      # ========================================
-      # 13. CLEANUP OLD VERSIONS (keep last 5)
-      # ========================================
-      - name: Cleanup old FAISS versions
-        run: |
-          echo "🧹 Cleaning old versions (keeping latest 5)..."
-          cd data/vectorstore
-          ls -t legal_index_*.faiss 2>/dev/null | tail -n +6 | xargs -r rm -f
-          ls -t index_metadata_*.json 2>/dev/null | tail -n +6 | xargs -r rm -f
-          ls -t chunks_metadata_*.json 2>/dev/null | tail -n +6 | xargs -r rm -f
-          cd ../..
-
-      # ========================================
-      # 14. COMMIT AND PUSH VERSION FILES
-      # ========================================
-      - name: Commit version files
+        run: python pipeline/vector_pipeline.py
+      
+      - name: Commit data files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Add all version-controlled files
-          git add data/vectorstore/latest_version.txt || true
-          git add data/vectorstore/index_metadata_*.json || true
-          git add data/vectorstore/chunks_metadata_*.json || true
-          git add data/chunks/legal_chunks_latest.json || true
-          git add data/chunks/doc_relations_latest.json || true
-          git add data/state/processed_files.json || true
-          git add data/texts/legal_texts_latest.json || true
-          
-          # Commit if there are changes
-          if git diff --staged --quiet; then
-            echo "📭 No changes to commit"
-          else
-            git commit -m "🤖 Auto update: $(date +'%Y-%m-%d %H:%M:%S')"
-            git push
-            echo "✅ Committed and pushed changes"
-          fi
-
-      # ========================================
-      # 15. SEND NOTIFICATION (optional)
-      # ========================================
-      - name: Send summary to console
-        run: |
-          echo ""
-          echo "=========================================="
-          echo "✅ UPDATE COMPLETED SUCCESSFULLY"
-          echo "=========================================="
-          echo "📅 Time: $(date)"
-          echo "📁 Latest version: $(cat data/vectorstore/latest_version.txt 2>/dev/null || echo 'N/A')"
-          echo "📊 Total documents: $(cat data/state/processed_files.json 2>/dev/null | python -c 'import sys,json; print(len(json.load(sys.stdin)))' || echo 'N/A')"
-          echo "=========================================="
-
-      # ========================================
-      # 16. UPLOAD LOGS (if failed)
-      # ========================================
-      - name: Upload logs on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: pipeline-logs
-          path: |
-            data/logs/
-            data/state/processed_files.json
-          retention-days: 7
+          git add data/
+          git commit -m "Auto update: $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
+          git push
