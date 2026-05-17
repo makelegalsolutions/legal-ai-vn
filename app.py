@@ -23,14 +23,13 @@ def get_hanoi_time():
     return datetime.now(tz_hanoi)
 
 # ========================================
-# TIỆN ÍCH 1B: LẤY NGÀY ÂM LỊCH (API HOẠT ĐỘNG)
+# TIỆN ÍCH 1B: LẤY NGÀY ÂM LỊCH
 # ========================================
-@st.cache_data(ttl=3600)  # Cache 1 giờ
+@st.cache_data(ttl=3600)
 def get_lunar_date():
-    """Lấy ngày âm lịch từ API Vietnamese Lunar Calendar"""
+    """Lấy ngày âm lịch từ API"""
     try:
         today = datetime.now()
-        # Dùng API âm lịch của Vietnamese - hoạt động ổn định
         url = f"https://lunar.dragon-style.com/api/v1/lunar?date={today.day}/{today.month}/{today.year}"
         response = requests.get(url, timeout=10)
         if response.status_code == 200:
@@ -43,7 +42,6 @@ def get_lunar_date():
     except:
         pass
     
-    # Fallback 2: Dùng API khác
     try:
         today = datetime.now()
         url = f"https://api.vietlunar.com/v1/calendar?day={today.day}&month={today.month}&year={today.year}"
@@ -58,70 +56,143 @@ def get_lunar_date():
     except:
         pass
     
-    # Fallback 3: Tính thủ công cho ngày 18/05/2026
-    # (Bạn có thể cập nhật thủ công nếu API lỗi)
+    # Fallback cho ngày hiện tại
     today = datetime.now()
     if today.year == 2026 and today.month == 5 and today.day == 18:
         return "Ngày 22 tháng 3 năm Ất Tỵ"
     elif today.year == 2026 and today.month == 5 and today.day == 17:
         return "Ngày 21 tháng 3 năm Ất Tỵ"
     else:
-        return f"Đang cập nhật (ngày {today.day}/{today.month})"
+        return f"Đang cập nhật"
 
 # ========================================
-# TIỆN ÍCH 1C: LẤY NHIỆT ĐỘ CÁC THÀNH PHỐ
+# TIỆN ÍCH 1C: LẤY THÔNG TIN THỜI TIẾT CHI TIẾT
 # ========================================
-@st.cache_data(ttl=1800)  # Cache 30 phút
-def get_weather(city: str) -> dict:
-    """Lấy nhiệt độ từ OpenWeatherMap API (cần key) hoặc Open-Meteo (free)"""
+@st.cache_data(ttl=1800)
+def get_weather_detailed(city: str) -> dict:
+    """Lấy thông tin thời tiết chi tiết (nhiệt độ, độ ẩm, gió, tình trạng)"""
     cities = {
-        "Hà Nội": {"lat": 21.0285, "lon": 105.8542, "name": "Hà Nội"},
-        "Nha Trang": {"lat": 12.2388, "lon": 109.1967, "name": "Nha Trang"},
-        "TP. Hồ Chí Minh": {"lat": 10.8231, "lon": 106.6297, "name": "TP. HCM"}
+        "Hà Nội": {"lat": 21.0285, "lon": 105.8542},
+        "Nha Trang": {"lat": 12.2388, "lon": 109.1967},
+        "TP. HCM": {"lat": 10.8231, "lon": 106.6297}
     }
     
     if city not in cities:
-        return {"temp": "N/A", "condition": "N/A"}
+        return {"temp": "N/A", "condition": "N/A", "humidity": "N/A", "wind": "N/A", "icon": "❓"}
     
     try:
         coords = cities[city]
-        # Dùng Open-Meteo (free, không cần key)
-        url = f"https://api.open-meteo.com/v1/forecast?latitude={coords['lat']}&longitude={coords['lon']}&current_weather=true&timezone=Asia/Bangkok"
+        # Dùng Open-Meteo với nhiều thông số hơn
+        url = f"https://api.open-meteo.com/v1/forecast?latitude={coords['lat']}&longitude={coords['lon']}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,precipitation,cloudcover&timezone=Asia/Bangkok"
         response = requests.get(url, timeout=10)
         if response.status_code == 200:
             data = response.json()
             current = data.get('current_weather', {})
             temp = current.get('temperature', 'N/A')
             wind = current.get('windspeed', 'N/A')
+            wind_dir = current.get('winddirection', 'N/A')
             
-            # Xác định điều kiện thời tiết đơn giản
+            # Lấy thêm thông tin từ hourly (lấy giờ hiện tại)
+            hourly = data.get('hourly', {})
+            current_hour = datetime.now().hour
+            humidity = "N/A"
+            precipitation = "N/A"
+            cloudcover = "N/A"
+            
+            if hourly:
+                times = hourly.get('time', [])
+                for i, t in enumerate(times):
+                    if t and current_hour in [int(t.split('T')[1].split(':')[0]) if 'T' in t else -1]:
+                        if i < len(hourly.get('relative_humidity_2m', [])):
+                            humidity = hourly['relative_humidity_2m'][i]
+                        if i < len(hourly.get('precipitation', [])):
+                            precipitation = hourly['precipitation'][i]
+                        if i < len(hourly.get('cloudcover', [])):
+                            cloudcover = hourly['cloudcover'][i]
+                        break
+            
+            # Xác định điều kiện thời tiết và icon
             if temp == 'N/A':
                 condition = "N/A"
+                icon = "❓"
+            elif temp > 35:
+                condition = "Nắng nóng gay gắt"
+                icon = "🥵☀️"
             elif temp > 32:
-                condition = "☀️ Nắng nóng"
+                condition = "Nắng nóng"
+                icon = "☀️🔥"
             elif temp > 28:
-                condition = "🌤️ Nắng"
+                condition = "Nắng"
+                icon = "☀️"
             elif temp > 24:
-                condition = "⛅ Mát mẻ"
+                condition = "Mát mẻ"
+                icon = "⛅"
             elif temp > 20:
-                condition = "🌥️ Se lạnh"
+                condition = "Se lạnh"
+                icon = "🌥️"
             else:
-                condition = "☁️ Lạnh"
+                condition = "Lạnh"
+                icon = "☁️"
             
-            if wind > 20:
-                condition = "💨 Gió mạnh"
+            # Kiểm tra mưa
+            if precipitation and precipitation > 0:
+                if precipitation < 2:
+                    condition = "Mưa nhỏ"
+                    icon = "🌦️"
+                elif precipitation < 10:
+                    condition = "Mưa vừa"
+                    icon = "🌧️"
+                else:
+                    condition = "Mưa lớn"
+                    icon = "⛈️"
             
-            return {"temp": f"{temp}°C", "condition": condition}
+            # Kiểm tra mây
+            if cloudcover and cloudcover > 80 and not (precipitation and precipitation > 0):
+                condition = "Nhiều mây"
+                icon = "☁️"
+            elif cloudcover and cloudcover > 50:
+                condition = "Có mây"
+                icon = "⛅"
+            
+            # Hướng gió
+            wind_text = ""
+            if wind_dir != 'N/A':
+                if 0 <= wind_dir < 22.5 or 337.5 <= wind_dir <= 360:
+                    wind_text = "Bắc"
+                elif 22.5 <= wind_dir < 67.5:
+                    wind_text = "Đông Bắc"
+                elif 67.5 <= wind_dir < 112.5:
+                    wind_text = "Đông"
+                elif 112.5 <= wind_dir < 157.5:
+                    wind_text = "Đông Nam"
+                elif 157.5 <= wind_dir < 202.5:
+                    wind_text = "Nam"
+                elif 202.5 <= wind_dir < 247.5:
+                    wind_text = "Tây Nam"
+                elif 247.5 <= wind_dir < 292.5:
+                    wind_text = "Tây"
+                elif 292.5 <= wind_dir < 337.5:
+                    wind_text = "Tây Bắc"
+                wind_text = f", gió {wind_text}"
+            
+            return {
+                "temp": f"{temp}°C" if temp != 'N/A' else "N/A",
+                "condition": condition,
+                "icon": icon,
+                "humidity": f"{humidity}%" if humidity != 'N/A' else "N/A",
+                "wind": f"{wind} km/h{wind_text}" if wind != 'N/A' else "N/A",
+                "precipitation": f"{precipitation} mm" if precipitation != 'N/A' else "N/A"
+            }
     except Exception as e:
         print(f"Weather error for {city}: {e}")
     
-    return {"temp": "N/A", "condition": "N/A"}
+    return {"temp": "N/A", "condition": "N/A", "icon": "❓", "humidity": "N/A", "wind": "N/A", "precipitation": "N/A"}
 
 # ========================================
 # TIỆN ÍCH 2A: LƯU LỊCH SỬ CÂU HỎI
 # ========================================
 def save_to_history(query: str, answer_preview: str):
-    """Lưu câu hỏi vào lịch sử (session state và file)"""
+    """Lưu câu hỏi vào lịch sử"""
     if "history" not in st.session_state:
         st.session_state.history = []
     
@@ -137,15 +208,14 @@ def save_to_history(query: str, answer_preview: str):
         st.session_state.history = st.session_state.history[:30]
     
     os.makedirs("data/state", exist_ok=True)
-    history_file = "data/state/history.json"
     try:
-        with open(history_file, "w", encoding="utf-8") as f:
+        with open("data/state/history.json", "w", encoding="utf-8") as f:
             json.dump(st.session_state.history, f, ensure_ascii=False, indent=2)
     except:
         pass
 
 def load_history_from_file():
-    """Tải lịch sử từ file khi khởi động"""
+    """Tải lịch sử từ file"""
     history_file = "data/state/history.json"
     if os.path.exists(history_file):
         try:
@@ -160,7 +230,7 @@ def load_history_from_file():
 # TIỆN ÍCH 2B: ĐẾM LƯỢT VIEW
 # ========================================
 def init_view_counter():
-    """Khởi tạo view counter trong session state và file"""
+    """Khởi tạo view counter"""
     counter_file = "data/state/view_count.json"
     
     if "view_count" not in st.session_state:
@@ -213,13 +283,13 @@ st.set_page_config(
 )
 
 # ========================================
-# KHỞI TẠO VIEW COUNTER & HISTORY
+# KHỞI TẠO
 # ========================================
 init_view_counter()
 load_history_from_file()
 
 # ========================================
-# SIDEBAR - TIỆN ÍCH
+# SIDEBAR
 # ========================================
 with st.sidebar:
     # Header
@@ -228,17 +298,19 @@ with st.sidebar:
     st.divider()
     
     # ========================================
-    # TIỆN ÍCH 1: NGÀY GIỜ HÀ NỘI (Dương lịch + Âm lịch)
+    # TIỆN ÍCH 1: NGÀY GIỜ (FONT NHỎ)
     # ========================================
     st.markdown("### 📅 Thông tin thời gian")
     
     hanoi_time = get_hanoi_time()
     
-    col1, col2 = st.columns(2)
-    with col1:
-        st.metric("🕐 Giờ HN", hanoi_time.strftime("%H:%M:%S"))
-    with col2:
-        st.metric("📆 Ngày DL", hanoi_time.strftime("%d/%m/%Y"))
+    # Dùng font nhỏ hơn với markdown
+    st.markdown(f"""
+    <div style="font-size: 0.85em;">
+        <b>🕐 Giờ HN:</b> {hanoi_time.strftime("%H:%M:%S")}<br>
+        <b>📆 Ngày DL:</b> {hanoi_time.strftime("%d/%m/%Y")}
+    </div>
+    """, unsafe_allow_html=True)
     
     # Âm lịch
     lunar_date = get_lunar_date()
@@ -247,27 +319,33 @@ with st.sidebar:
     st.divider()
     
     # ========================================
-    # TIỆN ÍCH 2: NHIỆT ĐỘ CÁC THÀNH PHỐ
+    # TIỆN ÍCH 2: THỜI TIẾT CHI TIẾT
     # ========================================
-    st.markdown("### 🌡️ Nhiệt độ hôm nay")
+    st.markdown("### 🌡️ Thời tiết hôm nay")
     
-    cities = ["Hà Nội", "Nha Trang", "TP. Hồ Chí Minh"]
+    cities = ["Hà Nội", "Nha Trang", "TP. HCM"]
     
     for city in cities:
-        weather = get_weather(city)
-        col1, col2, col3 = st.columns([2, 1, 2])
-        with col1:
-            st.write(f"**{city}**")
-        with col2:
-            st.write(weather["temp"])
-        with col3:
-            st.caption(weather["condition"])
+        weather = get_weather_detailed(city)
+        
+        # Tạo khung cho mỗi thành phố
+        st.markdown(f"""
+        <div style="background-color: #1e1e1e; padding: 8px; border-radius: 8px; margin-bottom: 8px;">
+            <b>{weather['icon']} {city}</b><br>
+            <span style="font-size: 1.3em; font-weight: bold;">{weather['temp']}</span><br>
+            <span style="font-size: 0.8em; color: #aaaaaa;">
+                {weather['condition']}<br>
+                💧 Độ ẩm: {weather['humidity']}<br>
+                🌬️ Gió: {weather['wind']}
+            </span>
+        </div>
+        """, unsafe_allow_html=True)
     
     st.caption("⏱️ Cập nhật mỗi 30 phút | Nguồn: Open-Meteo")
     st.divider()
     
     # ========================================
-    # TIỆN ÍCH 3: THỐNG KÊ & LƯỢT VIEW
+    # TIỆN ÍCH 3: THỐNG KÊ
     # ========================================
     st.markdown("### 📊 Thống kê")
     
@@ -301,7 +379,6 @@ with st.sidebar:
                 st.caption(f"**Trả lời:** {item['answer_preview']}...")
     else:
         st.info("💬 Chưa có câu hỏi nào")
-        st.caption("Hãy đặt câu hỏi pháp luật ở phần chính")
     
     st.divider()
     
@@ -312,7 +389,7 @@ with st.sidebar:
         check_api_keys()
     
     # ========================================
-    # DEBUG: KIỂM TRA DỮ LIỆU
+    # DEBUG
     # ========================================
     with st.expander("🔧 System Status"):
         data_paths = {
@@ -344,7 +421,6 @@ with st.sidebar:
                 version = f.read().strip()
             st.info(f"📌 Version: {version[:20]}..." if len(version) > 20 else f"📌 Version: {version}")
     
-    # Footer
     st.divider()
     st.caption("⚖️ Legal AI VN v1.0")
 
@@ -354,8 +430,7 @@ with st.sidebar:
 st.title("⚖️ Legal AI Việt Nam")
 st.markdown("Hỏi đáp pháp luật thông minh dựa trên văn bản gốc")
 
-# Tabs
-tab1, tab2 = st.tabs(["💬 Tra cứu pháp luật", "ℹ️ Giới thiệu & Hướng dẫn"])
+tab1, tab2 = st.tabs(["💬 Tra cứu pháp luật", "ℹ️ Giới thiệu"])
 
 with tab1:
     with st.form(key="query_form"):
@@ -377,9 +452,9 @@ with tab1:
         if not query or not query.strip():
             st.warning("⚠️ Vui lòng nhập câu hỏi!")
         elif not GEMINI_API_KEY:
-            st.error("❌ Chưa thiết lập GEMINI_API_KEY. Vui lòng kiểm tra Settings → Secrets trên Streamlit Cloud.")
+            st.error("❌ Chưa thiết lập GEMINI_API_KEY")
         else:
-            with st.spinner("⚖️ Đang tra cứu văn bản pháp luật và phân tích..."):
+            with st.spinner("⚖️ Đang tra cứu..."):
                 start = time.time()
                 try:
                     result = ask_legal_ai(
@@ -395,88 +470,52 @@ with tab1:
                         
                         save_to_history(query.strip(), result["answer"][:200])
                         
-                        with st.expander("📚 Xem nguồn trích dẫn pháp lý"):
+                        with st.expander("📚 Xem nguồn trích dẫn"):
                             for i, chunk in enumerate(result.get("retrieved_chunks", []), 1):
                                 st.markdown(f"**{i}. {chunk.get('article', 'N/A')}**")
-                                st.caption(f"📄 Văn bản: {chunk.get('title', '')[:100]}...")
+                                st.caption(f"📄 {chunk.get('title', '')[:100]}...")
                                 st.caption(f"🎯 Độ tin cậy: {chunk.get('score', 0):.4f}")
                                 st.divider()
                                 
                     elif result["status"] in ["out_of_scope", "no_result"]:
-                        st.warning(f"⚠️ {result.get('message', 'Không tìm thấy thông tin phù hợp.')}")
-                        st.info("💡 Gợi ý: Hãy thử hỏi về các lĩnh vực như doanh nghiệp, lao động, hành chính...")
+                        st.warning(f"⚠️ {result.get('message', 'Không tìm thấy thông tin')}")
                     else:
-                        st.error(f"❌ {result.get('message', 'Có lỗi xảy ra khi xử lý.')}")
+                        st.error(f"❌ {result.get('message', 'Có lỗi xảy ra')}")
                         
                 except Exception as e:
-                    st.error(f"❌ Lỗi xử lý: {str(e)}")
+                    st.error(f"❌ Lỗi: {str(e)}")
                     latency = 0
             
-            st.caption(f"⏱️ Thời gian xử lý: {latency} giây")
+            st.caption(f"⏱️ Thời gian: {latency} giây")
 
 with tab2:
     st.markdown("""
     ### 📖 Giới thiệu về Legal AI VN
     
-    **Legal AI VN** là trợ lý pháp luật thông minh sử dụng công nghệ **RAG (Retrieval-Augmented Generation)** kết hợp với mô hình ngôn ngữ lớn **Gemini** của Google.
+    **Legal AI VN** là trợ lý pháp luật thông minh sử dụng công nghệ **RAG** kết hợp với **Gemini** của Google.
     
     ---
     
-    ### 🎯 Tính năng chính
+    ### 🎯 Tính năng
     
     | Tính năng | Mô tả |
     |-----------|-------|
-    | 🔍 Tra cứu thông minh | Tìm kiếm văn bản pháp luật liên quan đến câu hỏi |
-    | 📝 Trả lời chính xác | Dựa trên nội dung văn bản gốc, có trích dẫn cụ thể |
-    | 📚 Nguồn trích dẫn | Hiển thị Điều, Khoản, văn bản nguồn |
-    | 🔄 Tự động cập nhật | Đồng bộ dữ liệu từ Google Drive và Congbao mỗi 6 giờ |
-    | 🌡️ Tiện ích bổ sung | Thời gian, thời tiết, lịch sử câu hỏi |
+    | 🔍 Tra cứu thông minh | Tìm văn bản pháp luật liên quan |
+    | 📝 Trả lời chính xác | Dựa trên nội dung gốc, có trích dẫn |
+    | 🔄 Tự động cập nhật | Đồng bộ từ Drive và Congbao |
+    | 🌡️ Tiện ích bổ sung | Thời gian, thời tiết, lịch sử |
     
     ---
     
-    ### 📚 Nguồn dữ liệu
+    ### ⚠️ Lưu ý
     
-    - **Google Drive**: Văn bản pháp luật đã được tải lên
-    - **Congbao.chinhphu.vn**: Crawler tự động lấy văn bản mới
-    - **Định dạng**: PDF, DOCX
+    > Thông tin chỉ mang tính **tham khảo**, không thay thế tư vấn pháp lý chính thức.
     
     ---
     
-    ### 💡 Cách sử dụng hiệu quả
-    
-    1. **Đặt câu hỏi cụ thể**, rõ ràng
-    2. **Tham khảo ngưỡng tin cậy** (cao hơn = chính xác hơn)
-    3. **Xem nguồn trích dẫn** để kiểm tra thông tin gốc
-    4. **Sử dụng lịch sử** để xem lại câu hỏi đã hỏi
-    
-    ---
-    
-    ### ⚠️ Lưu ý quan trọng
-    
-    > Thông tin do AI tạo ra chỉ mang tính **tham khảo**, không thay thế tư vấn pháp lý chính thức từ luật sư hoặc cơ quan nhà nước có thẩm quyền.
-    
-    ---
-    
-    ### 📞 Liên hệ & Đóng góp
-    
-    - **GitHub**: [makelegalsolutions/legal-ai-vn](https://github.com/makelegalsolutions/legal-ai-vn)
-    - **Báo lỗi**: Tạo issue trên GitHub
-    
-    ---
-    
-    ### 📊 Phiên bản
-    
-    | Thông tin | Chi tiết |
-    |-----------|----------|
-    | Phiên bản | v1.0 |
-    | Cập nhật cuối | 2026-05-18 |
-    | Engine AI | Gemini 2.5 Flash |
-    | Embedding | multilingual-e5-base |
+    **Phiên bản:** v1.0 | **Cập nhật:** 2026-05-18
     """)
 
 # Footer
 st.divider()
-col1, col2, col3 = st.columns([1, 2, 1])
-with col2:
-    st.caption("⚠️ Thông tin mang tính tham khảo. Không thay thế tư vấn pháp lý chính thức.")
-    st.caption("⚖️ Legal AI VN - Trợ lý Pháp luật Việt Nam")
+st.caption("⚠️ Thông tin mang tính tham khảo. Không thay thế tư vấn pháp lý chính thức.")
