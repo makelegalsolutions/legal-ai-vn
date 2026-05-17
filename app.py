@@ -56,7 +56,6 @@ def get_lunar_date():
     except:
         pass
     
-    # Fallback cho ngày hiện tại
     today = datetime.now()
     if today.year == 2026 and today.month == 5 and today.day == 18:
         return "Ngày 22 tháng 3 năm Ất Tỵ"
@@ -70,7 +69,7 @@ def get_lunar_date():
 # ========================================
 @st.cache_data(ttl=1800)
 def get_weather_detailed(city: str) -> dict:
-    """Lấy thông tin thời tiết chi tiết (nhiệt độ, độ ẩm, gió, tình trạng)"""
+    """Lấy thông tin thời tiết chi tiết"""
     cities = {
         "Hà Nội": {"lat": 21.0285, "lon": 105.8542},
         "Nha Trang": {"lat": 12.2388, "lon": 109.1967},
@@ -82,7 +81,6 @@ def get_weather_detailed(city: str) -> dict:
     
     try:
         coords = cities[city]
-        # Dùng Open-Meteo với nhiều thông số hơn
         url = f"https://api.open-meteo.com/v1/forecast?latitude={coords['lat']}&longitude={coords['lon']}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,precipitation,cloudcover&timezone=Asia/Bangkok"
         response = requests.get(url, timeout=10)
         if response.status_code == 200:
@@ -92,7 +90,6 @@ def get_weather_detailed(city: str) -> dict:
             wind = current.get('windspeed', 'N/A')
             wind_dir = current.get('winddirection', 'N/A')
             
-            # Lấy thêm thông tin từ hourly (lấy giờ hiện tại)
             hourly = data.get('hourly', {})
             current_hour = datetime.now().hour
             humidity = "N/A"
@@ -111,7 +108,7 @@ def get_weather_detailed(city: str) -> dict:
                             cloudcover = hourly['cloudcover'][i]
                         break
             
-            # Xác định điều kiện thời tiết và icon
+            # Xác định điều kiện thời tiết
             if temp == 'N/A':
                 condition = "N/A"
                 icon = "❓"
@@ -134,7 +131,6 @@ def get_weather_detailed(city: str) -> dict:
                 condition = "Lạnh"
                 icon = "☁️"
             
-            # Kiểm tra mưa
             if precipitation and precipitation > 0:
                 if precipitation < 2:
                     condition = "Mưa nhỏ"
@@ -146,7 +142,6 @@ def get_weather_detailed(city: str) -> dict:
                     condition = "Mưa lớn"
                     icon = "⛈️"
             
-            # Kiểm tra mây
             if cloudcover and cloudcover > 80 and not (precipitation and precipitation > 0):
                 condition = "Nhiều mây"
                 icon = "☁️"
@@ -173,7 +168,7 @@ def get_weather_detailed(city: str) -> dict:
                     wind_text = "Tây"
                 elif 292.5 <= wind_dir < 337.5:
                     wind_text = "Tây Bắc"
-                wind_text = f", gió {wind_text}"
+                wind_text = f", {wind_text}"
             
             return {
                 "temp": f"{temp}°C" if temp != 'N/A' else "N/A",
@@ -283,6 +278,49 @@ st.set_page_config(
 )
 
 # ========================================
+# CSS TÙY CHỈNH SIDEBAR
+# ========================================
+st.markdown("""
+<style>
+    /* Tăng độ rộng sidebar */
+    [data-testid="stSidebar"] {
+        min-width: 320px;
+        max-width: 380px;
+    }
+    
+    /* Style cho thông tin thời gian */
+    .time-info {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 10px;
+    }
+    
+    /* Style cho thời tiết 3 cột */
+    .weather-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 15px;
+    }
+    .weather-card {
+        background-color: #1e1e1e;
+        padding: 10px 5px;
+        border-radius: 10px;
+        text-align: center;
+    }
+    .weather-temp {
+        font-size: 1.3rem;
+        font-weight: bold;
+    }
+    .weather-detail {
+        font-size: 0.7rem;
+        color: #aaaaaa;
+        margin-top: 5px;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# ========================================
 # KHỞI TẠO
 # ========================================
 init_view_counter()
@@ -298,48 +336,48 @@ with st.sidebar:
     st.divider()
     
     # ========================================
-    # TIỆN ÍCH 1: NGÀY GIỜ (FONT NHỎ)
+    # TIỆN ÍCH 1: NGÀY GIỜ (CỠ CHỮ TO, RÕ)
     # ========================================
     st.markdown("### 📅 Thông tin thời gian")
     
     hanoi_time = get_hanoi_time()
     
-    # Dùng font nhỏ hơn với markdown
+    # Hiển thị giờ, ngày DL, ngày AL với cỡ chữ đều và to
     st.markdown(f"""
-    <div style="font-size: 0.85em;">
-        <b>🕐 Giờ HN:</b> {hanoi_time.strftime("%H:%M:%S")}<br>
-        <b>📆 Ngày DL:</b> {hanoi_time.strftime("%d/%m/%Y")}
+    <div class="time-info">
+        <b>🕐 Giờ Hà Nội:</b> <span style="font-size: 1.2rem;">{hanoi_time.strftime("%H:%M:%S")}</span><br>
+        <b>📆 Dương lịch:</b> <span style="font-size: 1.1rem;">{hanoi_time.strftime("%d/%m/%Y")}</span><br>
+        <b>📖 Âm lịch:</b> <span style="font-size: 1.1rem;">{get_lunar_date()}</span>
     </div>
     """, unsafe_allow_html=True)
-    
-    # Âm lịch
-    lunar_date = get_lunar_date()
-    st.info(f"📖 **Âm lịch:** {lunar_date}")
     
     st.divider()
     
     # ========================================
-    # TIỆN ÍCH 2: THỜI TIẾT CHI TIẾT
+    # TIỆN ÍCH 2: THỜI TIẾT (3 CỘT)
     # ========================================
     st.markdown("### 🌡️ Thời tiết hôm nay")
     
     cities = ["Hà Nội", "Nha Trang", "TP. HCM"]
+    weather_data = {city: get_weather_detailed(city) for city in cities}
     
-    for city in cities:
-        weather = get_weather_detailed(city)
-        
-        # Tạo khung cho mỗi thành phố
-        st.markdown(f"""
-        <div style="background-color: #1e1e1e; padding: 8px; border-radius: 8px; margin-bottom: 8px;">
-            <b>{weather['icon']} {city}</b><br>
-            <span style="font-size: 1.3em; font-weight: bold;">{weather['temp']}</span><br>
-            <span style="font-size: 0.8em; color: #aaaaaa;">
-                {weather['condition']}<br>
-                💧 Độ ẩm: {weather['humidity']}<br>
-                🌬️ Gió: {weather['wind']}
-            </span>
-        </div>
-        """, unsafe_allow_html=True)
+    # Tạo 3 cột
+    cols = st.columns(3)
+    
+    for idx, city in enumerate(cities):
+        w = weather_data[city]
+        with cols[idx]:
+            st.markdown(f"""
+            <div class="weather-card">
+                <div><b>{w['icon']} {city}</b></div>
+                <div class="weather-temp">{w['temp']}</div>
+                <div style="font-size: 0.8rem;">{w['condition']}</div>
+                <div class="weather-detail">
+                    💧 {w['humidity']}<br>
+                    🌬️ {w['wind'][:20]}...
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
     
     st.caption("⏱️ Cập nhật mỗi 30 phút | Nguồn: Open-Meteo")
     st.divider()
