@@ -279,7 +279,7 @@ def read_uploaded_file(uploaded_file):
                 page_text = page.extract_text()
                 if page_text:
                     text += page_text + "\n"
-            return text[:5000]  # Giới hạn 5000 ký tự
+            return text[:5000]
         
         elif file_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document" or file_name.endswith('.docx'):
             from docx import Document
@@ -296,23 +296,48 @@ def read_uploaded_file(uploaded_file):
         return f"❌ Lỗi đọc file: {str(e)}"
 
 def format_legal_citations(chunks):
-    """Định dạng căn cứ pháp lý từ các chunks trả về"""
+    """Định dạng căn cứ pháp lý theo format: Tên văn bản, Điều X, Khoản Y, Điểm Z"""
     citations = []
     seen = set()
     
     for chunk in chunks:
-        # Tạo key duy nhất để tránh trùng lặp
-        key = f"{chunk.get('doc_id', '')}_{chunk.get('article', '')}"
-        if key in seen:
+        # Lấy thông tin từ chunk
+        doc_id = chunk.get('doc_id', '')
+        article = chunk.get('article', '')
+        title = chunk.get('title', '')
+        text = chunk.get('text', '')[:150]
+        
+        # Tạo key duy nhất
+        key = f"{doc_id}_{article}"
+        if key in seen or not doc_id:
             continue
         seen.add(key)
         
-        doc_id = chunk.get('doc_id', 'Không rõ')
-        article = chunk.get('article', 'Không rõ')
-        title = chunk.get('title', '')
-        text = chunk.get('text', '')[:300]  # Trích yếu 300 ký tự
+        # Xử lý tên văn bản (loại bỏ số hiệu trùng)
+        doc_name = doc_id
+        if doc_id and '-' in doc_id:
+            parts = doc_id.split('-')
+            if len(parts) >= 3:
+                doc_name = f"{parts[0]}/{parts[1]}/{parts[2]}"
         
-        citations.append(f"""**{doc_id}**\n- Điều: {article}\n- Trích yếu: {text}...\n""")
+        # Trích xuất Khoản, Điểm từ text nếu có
+        import re
+        clause = ""
+        point = ""
+        
+        # Tìm Khoản
+        khoan_match = re.search(r'Khoản\s+(\d+)', text, re.IGNORECASE)
+        if khoan_match:
+            clause = f", Khoản {khoan_match.group(1)}"
+        
+        # Tìm Điểm
+        diem_match = re.search(r'Điểm\s+([a-zđ])', text, re.IGNORECASE)
+        if diem_match:
+            point = f", Điểm {diem_match.group(1).upper()}"
+        
+        # Format theo yêu cầu
+        citation = f"{doc_name}, {article}{clause}{point}"
+        citations.append(citation)
     
     return citations
 
@@ -385,9 +410,10 @@ st.markdown("""
         color: #1e1e1e;
     }
     
-    /* Style cho chat input */
-    .stTextArea textarea {
-        font-size: 1rem;
+    /* Style cho chat input container */
+    .chat-input-wrapper {
+        position: relative;
+        margin-bottom: 10px;
     }
     
     /* Style cho câu trả lời */
@@ -408,9 +434,33 @@ st.markdown("""
         margin-top: 15px;
     }
     .legal-item {
-        margin-bottom: 15px;
-        padding-bottom: 10px;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
         border-bottom: 1px solid #e0e0e0;
+        font-family: monospace;
+        font-size: 0.9rem;
+    }
+    
+    /* Custom file uploader ghim cạnh chat input */
+    .custom-file-upload {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #f0f2f6;
+        cursor: pointer;
+        margin-left: 8px;
+        transition: all 0.3s ease;
+    }
+    .custom-file-upload:hover {
+        background-color: #e0e0e0;
+    }
+    
+    /* Ẩn file uploader mặc định */
+    .stFileUploader > div:first-child {
+        display: none;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -421,11 +471,13 @@ st.markdown("""
 init_view_counter()
 load_history_from_file()
 
-# Khởi tạo session state cho chat
+# Khởi tạo session state
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "current_query" not in st.session_state:
     st.session_state.current_query = ""
+if "file_content" not in st.session_state:
+    st.session_state.file_content = ""
 
 # ========================================
 # SIDEBAR
@@ -556,15 +608,32 @@ for msg in st.session_state.messages:
         with st.chat_message("assistant"):
             st.markdown(msg["content"])
 
-# Chat input với enter và mũi tên lên
-query = st.chat_input("Nhập câu hỏi pháp luật của bạn...")
+# Tạo container cho chat input và file uploader (ghim cạnh nhau)
+col1, col2 = st.columns([10, 1])
 
-# File uploader
-uploaded_file = st.file_uploader(
-    "📎 Đính kèm file (PDF, DOCX, TXT) - nội dung sẽ được thêm vào câu hỏi",
-    type=["pdf", "docx", "txt"],
-    help="Tải lên file văn bản để AI phân tích thêm"
-)
+with col1:
+    # Chat input với enter và mũi tên lên
+    query = st.chat_input("Nhập câu hỏi pháp luật của bạn...")
+
+with col2:
+    # Biểu tượng ghim để đính kèm file
+    with st.popover("📎", help="Đính kèm file (PDF, DOCX, TXT)"):
+        uploaded_file = st.file_uploader(
+            "Chọn file đính kèm",
+            type=["pdf", "docx", "txt"],
+            label_visibility="collapsed"
+        )
+        if uploaded_file is not None:
+            st.session_state.file_content = read_uploaded_file(uploaded_file)
+            if st.session_state.file_content and not st.session_state.file_content.startswith(("⚠️", "❌")):
+                st.success(f"✅ Đã tải: {uploaded_file.name}")
+                st.caption(f"Dung lượng: {len(st.session_state.file_content):,} ký tự")
+            else:
+                st.error(st.session_state.file_content)
+
+# Hiển thị thông báo nếu có file đính kèm
+if st.session_state.file_content and not st.session_state.file_content.startswith(("⚠️", "❌")):
+    st.info(f"📎 Đã đính kèm file ({len(st.session_state.file_content):,} ký tự)")
 
 # Xử lý khi có câu hỏi
 if query:
@@ -572,15 +641,10 @@ if query:
     st.session_state.messages.append({"role": "user", "content": query})
     st.chat_message("user").write(query)
     
-    # Xử lý file đính kèm
-    file_content = ""
-    if uploaded_file is not None:
-        file_content = read_uploaded_file(uploaded_file)
-        if file_content and not file_content.startswith(("⚠️", "❌")):
-            file_content = f"\n\n[Nội dung file đính kèm]:\n{file_content}\n"
-    
     # Kết hợp câu hỏi với nội dung file
-    full_query = query + file_content if file_content else query
+    full_query = query
+    if st.session_state.file_content and not st.session_state.file_content.startswith(("⚠️", "❌")):
+        full_query = query + f"\n\n[Nội dung file đính kèm]:\n{st.session_state.file_content}\n"
     
     # Kiểm tra API key
     if not GEMINI_API_KEY:
@@ -606,17 +670,14 @@ if query:
                 retrieved_chunks = result.get("retrieved_chunks", [])
                 
                 # Tách phần trả lời và căn cứ pháp lý
-                import re
-                # Tìm phần "CĂN CỨ PHÁP LÝ" trong câu trả lời gốc
-                legal_basis_section = ""
                 main_answer = answer_text
                 
+                # Loại bỏ phần "CĂN CỨ PHÁP LÝ" nếu có trong answer gốc
                 if "CĂN CỨ PHÁP LÝ" in answer_text:
                     parts = answer_text.split("CĂN CỨ PHÁP LÝ")
                     main_answer = parts[0].strip()
-                    legal_basis_section = "CĂN CỨ PHÁP LÝ" + parts[1] if len(parts) > 1 else ""
                 
-                # Định dạng lại căn cứ pháp lý từ chunks
+                # Định dạng căn cứ pháp lý theo format mới
                 legal_citations = format_legal_citations(retrieved_chunks)
                 
                 # Xây dựng response
@@ -628,11 +689,11 @@ if query:
 **Căn cứ pháp lý:**
 
 """
-                for citation in legal_citations[:5]:  # Tối đa 5 căn cứ
-                    final_response += f"\n{citation}\n"
-                
-                if not legal_citations:
-                    final_response += "\n*Không có trích dẫn cụ thể từ văn bản pháp luật.*\n"
+                if legal_citations:
+                    for citation in legal_citations[:5]:  # Tối đa 5 căn cứ
+                        final_response += f"• {citation}\n\n"
+                else:
+                    final_response += "*Không có trích dẫn cụ thể từ văn bản pháp luật.*\n"
                 
                 final_response += f"\n---\n⏱️ Thời gian xử lý: {latency} giây"
                 
@@ -653,6 +714,9 @@ if query:
     with st.chat_message("assistant"):
         st.markdown(final_response)
     
+    # Reset file content sau khi gửi (tùy chọn)
+    # st.session_state.file_content = ""
+    
     st.rerun()
 
 # ========================================
@@ -662,6 +726,7 @@ col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
     if st.button("🗑️ Xóa lịch sử chat", use_container_width=True):
         st.session_state.messages = []
+        st.session_state.file_content = ""
         st.rerun()
 
 # Footer
