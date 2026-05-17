@@ -343,3 +343,97 @@ print(f"Article chunks  : {article_count}")
 print(f"\n📁 Chunks latest   → data/chunks/legal_chunks_latest.json")
 print(f"📁 Relations latest → data/chunks/doc_relations_latest.json")
 print("=" * 70)
+
+# ========================================
+# EXPORT FUNCTION FOR INCREMENTAL UPDATE
+# ========================================
+# Hàm này dùng cho incremental_update.py để xử lý từng file riêng lẻ
+# ========================================
+
+def process_single_file(file_name: str, text: str) -> list:
+    """
+    Xử lý một file duy nhất - dùng cho incremental update
+    Trả về list chunks cho file đó
+    
+    Args:
+        file_name: Tên file (ví dụ: "10-2006-ND-CP.pdf")
+        text: Nội dung text đã được extract
+    
+    Returns:
+        List of chunks
+    """
+    if not file_name or not text or not text.strip():
+        return []
+    
+    # Lấy metadata từ tên file
+    file_meta = extract_file_metadata(file_name)
+    
+    # Chuẩn hóa text
+    normalized_text = normalize_text(text)
+    
+    # Trích xuất legal events
+    legal_events = extract_legal_events(normalized_text)
+    
+    # Chunking by Điều
+    dieu_chunks = split_by_dieu(normalized_text)
+    if not dieu_chunks:
+        dieu_chunks = [normalized_text]
+    
+    chunks = []
+    
+    for idx, chunk_text in enumerate(dieu_chunks):
+        chunk_text = chunk_text.strip()
+        if not chunk_text:
+            continue
+        
+        # Extract article
+        article_match = ARTICLE_EXTRACT_PATTERN.search(chunk_text)
+        article = article_match.group(0).strip() if article_match else ""
+        
+        # Extract title
+        title = ""
+        title_match = TITLE_PATTERN.search(chunk_text)
+        if title_match:
+            title = title_match.group(1).strip()
+            title = title.split("\n")[0].strip()
+            if len(title) > 250:
+                title = title[:250].rsplit(' ', 1)[0] + "..."
+        
+        # Extract khoans, diems
+        khoans = list(dict.fromkeys(KHOAN_PATTERN.findall(chunk_text)))
+        diems = list(dict.fromkeys(DIEM_PATTERN.findall(chunk_text)))
+        
+        # Extract citations
+        citations = list(dict.fromkeys(c.strip() for c in CITATION_PATTERN.findall(chunk_text)))
+        full_citations = list(dict.fromkeys(c.strip() for c in FULL_CITATION_PATTERN.findall(chunk_text)))
+        
+        chunk_type = "article" if article else "fallback"
+        article_id = normalize_doc_ref(article) if article else f"chunk-{idx}"
+        
+        chunk_id = f"{file_meta['doc_id']}::{article_id}"
+        if file_meta["version_id"]:
+            chunk_id = f"{chunk_id}::{file_meta['version_id']}"
+        
+        chunks.append({
+            "chunk_id": chunk_id,
+            "doc_id": file_meta["doc_id"],
+            "version_id": file_meta["version_id"],
+            "is_vbhn": file_meta["is_vbhn"],
+            "vbhn_so": file_meta["vbhn_so"],
+            "vbhn_coquan": file_meta["vbhn_coquan"],
+            "vbhn_nam": file_meta["vbhn_nam"],
+            "source": file_name,
+            "file_name": file_name,
+            "article": article,
+            "title": title,
+            "khoans": khoans,
+            "diems": diems,
+            "citations": citations,
+            "full_citations": full_citations,
+            "effective_date": legal_events["effective_date"],
+            "chunk_type": chunk_type,
+            "char_length": len(chunk_text),
+            "text": chunk_text
+        })
+    
+    return chunks
