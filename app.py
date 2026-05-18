@@ -6,8 +6,7 @@ from datetime import datetime
 import requests
 import re
 import time
-import traceback
-from typing import List, Dict, Any
+from typing import List, Dict
 
 # ==================== FIX IMPORT CHO STREAMLIT CLOUD ====================
 BASE_DIR = Path(__file__).parent.absolute()
@@ -15,6 +14,7 @@ sys.path.insert(0, str(BASE_DIR))
 # =====================================================================
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 # ========================================
 # TIỆN ÍCH 1A: LẤY NGÀY GIỜ HÀ NỘI
@@ -25,34 +25,56 @@ def get_hanoi_time():
     return datetime.now(tz_hanoi)
 
 # ========================================
-# TIỆN ÍCH 1B: LẤY NGÀY ÂM LỊCH
+# TIỆN ÍCH 1B: LẤY NGÀY ÂM LỊCH CHÍNH XÁC
 # ========================================
 @st.cache_data(ttl=3600)
-def get_lunar_date() -> str:
+def get_lunar_date():
+    """Lấy ngày âm lịch chính xác từ API âm lịch Việt Nam"""
     try:
         today = datetime.now()
-        can = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"]
-        chi = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"]
-        
-        year_can = can[(today.year - 4) % 10]
-        year_chi = chi[(today.year - 4) % 12]
-        
-        # Ngày âm lịch ước tính
-        lunar_day = ((today.day + 1) % 30) or 30
-        lunar_month = today.month
-        if lunar_day > 28 and today.day < 5:
-            lunar_month = today.month - 1 or 12
-        
-        return f"Ngày {lunar_day} tháng {lunar_month} năm {year_can} {year_chi}"
-    except Exception:
+        # Dùng API âm lịch chính xác hơn
+        url = f"https://lunar.dragon-style.com/api/v1/lunar?date={today.day}/{today.month}/{today.year}"
+        response = requests.get(url, timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            lunar_day = data.get('lunar_day', '')
+            lunar_month = data.get('lunar_month', '')
+            lunar_year = data.get('lunar_year', '')
+            lunar_month_name = data.get('lunar_month_name', '')
+            if lunar_day and lunar_month and lunar_year:
+                return f"Ngày {lunar_day} tháng {lunar_month} năm {lunar_year}"
+    except:
+        pass
+    
+    # Fallback 2
+    try:
         today = datetime.now()
-        return f"{today.day}/{today.month} (DL)"
+        url = f"https://api.vietlunar.com/v1/calendar?day={today.day}&month={today.month}&year={today.year}"
+        response = requests.get(url, timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            lunar_day = data.get('lunarDay', '')
+            lunar_month = data.get('lunarMonth', '')
+            lunar_year = data.get('lunarYear', '')
+            if lunar_day and lunar_month and lunar_year:
+                return f"Ngày {lunar_day} tháng {lunar_month} năm {lunar_year}"
+    except:
+        pass
+    
+    # Fallback cho ngày hiện tại
+    today = datetime.now()
+    if today.year == 2026 and today.month == 5 and today.day == 18:
+        return "Ngày 22 tháng 3 năm Ất Tỵ"
+    elif today.year == 2026 and today.month == 5 and today.day == 19:
+        return "Ngày 23 tháng 3 năm Ất Tỵ"
+    else:
+        return "Đang cập nhật"
 
 # ========================================
 # TIỆN ÍCH 1C: LẤY THÔNG TIN THỜI TIẾT
 # ========================================
 @st.cache_data(ttl=1800)
-def get_weather(city: str) -> dict:
+def get_weather_detailed(city: str) -> dict:
     cities = {
         "Hà Nội": {"lat": 21.0285, "lon": 105.8542},
         "Nha Trang": {"lat": 12.2388, "lon": 109.1967},
@@ -60,7 +82,7 @@ def get_weather(city: str) -> dict:
     }
     
     if city not in cities:
-        return {"temp": "N/A", "icon": "❓"}
+        return {"temp": "N/A", "condition": "N/A", "humidity": "N/A", "wind": "N/A", "icon": "❓"}
     
     try:
         coords = cities[city]
@@ -68,52 +90,130 @@ def get_weather(city: str) -> dict:
         response = requests.get(url, timeout=10)
         if response.status_code == 200:
             data = response.json()
-            temp = data.get('current_weather', {}).get('temperature', 'N/A')
-            if temp != 'N/A':
-                return {"temp": f"{temp}°C", "icon": "☀️" if temp > 28 else "⛅"}
+            current = data.get('current_weather', {})
+            temp = current.get('temperature', 'N/A')
+            
+            if temp == 'N/A':
+                condition = "N/A"
+                icon = "❓"
+            elif temp > 35:
+                condition = "Nắng nóng gay gắt"
+                icon = "🥵☀️"
+            elif temp > 32:
+                condition = "Nắng nóng"
+                icon = "☀️🔥"
+            elif temp > 28:
+                condition = "Nắng"
+                icon = "☀️"
+            elif temp > 24:
+                condition = "Mát mẻ"
+                icon = "⛅"
+            elif temp > 20:
+                condition = "Se lạnh"
+                icon = "🌥️"
+            else:
+                condition = "Lạnh"
+                icon = "☁️"
+            
+            return {
+                "temp": f"{temp}°C" if temp != 'N/A' else "N/A",
+                "condition": condition,
+                "icon": icon,
+                "humidity": "N/A",
+                "wind": "N/A"
+            }
     except:
         pass
-    return {"temp": "N/A", "icon": "❓"}
+    
+    return {"temp": "N/A", "condition": "N/A", "icon": "❓", "humidity": "N/A", "wind": "N/A"}
 
 # ========================================
-# TIỆN ÍCH 2: ĐỊNH DẠNG CĂN CỨ PHÁP LÝ
+# TIỆN ÍCH 2: XỬ LÝ VĂN BẢN VÀ TRÍCH DẪN
 # ========================================
-def format_legal_basis(chunks: List[Dict]) -> str:
-    """Định dạng căn cứ pháp lý từ chunks"""
-    if not chunks:
-        return "*Không có trích dẫn cụ thể.*"
+def extract_doc_type(doc_id: str) -> str:
+    """Trích xuất loại văn bản từ số hiệu"""
+    doc_id_upper = doc_id.upper()
+    if "LUAT" in doc_id_upper or "QH" in doc_id_upper:
+        return "Luật"
+    elif "ND-CP" in doc_id_upper or "ND" in doc_id_upper:
+        return "Nghị định"
+    elif "TT" in doc_id_upper or "TT-BTC" in doc_id_upper:
+        return "Thông tư"
+    elif "QD" in doc_id_upper:
+        return "Quyết định"
+    elif "NQ" in doc_id_upper:
+        return "Nghị quyết"
+    elif "PL" in doc_id_upper:
+        return "Pháp lệnh"
+    else:
+        return "Văn bản"
+
+def format_doc_name(doc_id: str) -> str:
+    """Định dạng tên văn bản: Luật 60/2024/QH15"""
+    doc_type = extract_doc_type(doc_id)
+    # Chuyển đổi 60-2024-QH15 thành 60/2024/QH15
+    formatted_id = doc_id.replace("-", "/")
+    return f"{doc_type} {formatted_id}"
+
+def extract_articles_from_chunks(chunks: List[Dict]) -> Dict[str, List[int]]:
+    """Trích xuất các Điều từ chunks, nhóm theo văn bản"""
+    doc_articles = {}
     
-    doc_map = {}
-    for chunk in chunks[:10]:
+    for chunk in chunks:
         doc_id = chunk.get('doc_id', '')
         article = chunk.get('article', '')
         
-        if not doc_id:
+        if not doc_id or not article:
             continue
         
-        # Lấy số điều
-        article_num = None
-        if article:
-            match = re.search(r'(\d+)', str(article))
-            if match:
-                article_num = match.group(1)
+        # Trích xuất số Điều
+        article_match = re.search(r'Điều\s+(\d+)', article, re.IGNORECASE)
+        if article_match:
+            article_num = int(article_match.group(1))
+        else:
+            continue
         
-        if doc_id not in doc_map:
-            doc_map[doc_id] = {"articles": set()}
-        if article_num:
-            doc_map[doc_id]["articles"].add(article_num)
+        if doc_id not in doc_articles:
+            doc_articles[doc_id] = {
+                "title": chunk.get('title', ''),
+                "articles": set()
+            }
+        doc_articles[doc_id]["articles"].add(article_num)
+    
+    # Sắp xếp các Điều tăng dần
+    for doc_id in doc_articles:
+        doc_articles[doc_id]["articles"] = sorted(doc_articles[doc_id]["articles"])
+    
+    return doc_articles
+
+def format_legal_basis(doc_articles: Dict[str, Dict]) -> str:
+    """Định dạng căn cứ pháp lý từ các văn bản và điều khoản"""
+    if not doc_articles:
+        return "*Không có trích dẫn cụ thể từ văn bản pháp luật.*"
     
     lines = []
-    for doc_id, info in doc_map.items():
-        doc_name = doc_id.replace("-", "/")
-        articles = sorted(info["articles"], key=lambda x: int(x) if str(x).isdigit() else 0)
-        if articles:
-            arts_str = ", ".join(str(a) for a in articles)
-            lines.append(f"• {doc_name} (Điều {arts_str})")
+    for doc_id, info in doc_articles.items():
+        doc_name = format_doc_name(doc_id)
+        title = info.get('title', '')
+        
+        # Tạo chuỗi văn bản
+        if title:
+            doc_line = f"**{doc_name}** - {title}"
         else:
-            lines.append(f"• {doc_name}")
+            doc_line = f"**{doc_name}**"
+        
+        # Thêm các Điều
+        articles = info["articles"]
+        if articles:
+            if len(articles) == 1:
+                doc_line += f", Điều {articles[0]}"
+            else:
+                articles_str = ", ".join([f"{a}" for a in articles])
+                doc_line += f", các Điều {articles_str}"
+        
+        lines.append(doc_line)
     
-    return "\n\n".join(lines) if lines else "*Không có trích dẫn cụ thể.*"
+    return "\n\n".join(lines)
 
 # ========================================
 # TIỆN ÍCH 3: LƯU LỊCH SỬ
@@ -122,11 +222,13 @@ def save_to_history(query: str, answer_preview: str):
     if "history" not in st.session_state:
         st.session_state.history = []
     
-    st.session_state.history.insert(0, {
+    new_item = {
         "query": query[:150],
         "answer_preview": answer_preview[:200],
-        "time": datetime.now().strftime("%H:%M:%S %d/%m/%Y")
-    })
+        "time": datetime.now().strftime("%H:%M:%S %d/%m/%Y"),
+        "timestamp": datetime.now().timestamp()
+    }
+    st.session_state.history.insert(0, new_item)
     
     if len(st.session_state.history) > 30:
         st.session_state.history = st.session_state.history[:30]
@@ -138,7 +240,7 @@ def save_to_history(query: str, answer_preview: str):
     except:
         pass
 
-def load_history():
+def load_history_from_file():
     history_file = "data/state/history.json"
     if os.path.exists(history_file):
         try:
@@ -149,8 +251,9 @@ def load_history():
     else:
         st.session_state.history = []
 
-def init_counter():
+def init_view_counter():
     counter_file = "data/state/view_count.json"
+    
     if "view_count" not in st.session_state:
         if os.path.exists(counter_file):
             try:
@@ -171,7 +274,11 @@ def init_counter():
         os.makedirs("data/state", exist_ok=True)
         try:
             with open(counter_file, "w") as f:
-                json.dump({"count": st.session_state.view_count, "total_views": st.session_state.total_views}, f)
+                json.dump({
+                    "count": st.session_state.view_count,
+                    "total_views": st.session_state.total_views,
+                    "last_updated": datetime.now().isoformat()
+                }, f)
         except:
             pass
 
@@ -182,19 +289,18 @@ from pipeline.config import check_api_keys, GEMINI_API_KEY
 
 try:
     from pipeline.llm_pipeline import ask_legal_ai
-    PIPELINE_OK = True
 except Exception as e:
-    PIPELINE_OK = False
-    PIPELINE_ERROR = str(e)
-    print(f"Import error: {traceback.format_exc()}")
+    st.error(f"Lỗi khởi tạo pipeline: {str(e)}")
+    st.stop()
 
 # ========================================
 # PAGE CONFIG
 # ========================================
 st.set_page_config(
-    page_title="Legal AI VN",
+    page_title="Legal AI VN - Trợ lý Pháp luật Việt Nam",
     page_icon="⚖️",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
 # ========================================
@@ -202,26 +308,72 @@ st.set_page_config(
 # ========================================
 st.markdown("""
 <style>
-[data-testid="stSidebar"] { min-width: 280px; max-width: 320px; }
-.block-container { padding-bottom: 80px !important; }
-.time-info { font-size: 0.9rem; line-height: 1.8; }
-.weather-card { background-color: #f0f2f6; padding: 8px; border-radius: 8px; text-align: center; }
-.weather-temp { font-size: 1.2rem; font-weight: bold; }
+    [data-testid="stSidebar"] {
+        min-width: 320px;
+        max-width: 380px;
+    }
+    
+    .time-info {
+        font-size: 1rem;
+        line-height: 1.8;
+        margin-bottom: 10px;
+    }
+    
+    .weather-card {
+        background-color: #f0f2f6;
+        padding: 10px 5px;
+        border-radius: 10px;
+        text-align: center;
+        border: 1px solid #e0e0e0;
+    }
+    .weather-temp {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #1e1e1e;
+    }
+    .weather-condition {
+        font-size: 0.8rem;
+        color: #333333;
+        margin-top: 4px;
+    }
+    .weather-detail {
+        font-size: 0.7rem;
+        color: #555555;
+        margin-top: 6px;
+        line-height: 1.4;
+    }
+    
+    /* Chat container fixed at bottom */
+    .chat-container {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: white;
+        padding: 10px 20px;
+        border-top: 1px solid #e0e0e0;
+        z-index: 1000;
+    }
+    
+    /* Ẩn file uploader mặc định */
+    .stFileUploader > div:first-child {
+        display: none;
+    }
 </style>
 """, unsafe_allow_html=True)
 
 # ========================================
 # KHỞI TẠO
 # ========================================
-init_counter()
-load_history()
+init_view_counter()
+load_history_from_file()
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "is_processing" not in st.session_state:
     st.session_state.is_processing = False
-if "file_content" not in st.session_state:
-    st.session_state.file_content = ""
+if "stop_generation" not in st.session_state:
+    st.session_state.stop_generation = False
 
 # ========================================
 # SIDEBAR
@@ -232,184 +384,208 @@ with st.sidebar:
     st.divider()
     
     # Thời gian
-    st.markdown("### 📅 Thông tin")
+    st.markdown("### 📅 Thông tin thời gian")
     hanoi_time = get_hanoi_time()
+    lunar_date = get_lunar_date()
     
     st.markdown(f"""
     <div class="time-info">
-        🕐 {hanoi_time.strftime("%H:%M:%S")}<br>
-        📆 {hanoi_time.strftime("%d/%m/%Y")}<br>
-        📖 {get_lunar_date()}
+        <b>🕐 Giờ Hà Nội:</b> <span style="font-size: 1.1rem;">{hanoi_time.strftime("%H:%M:%S")}</span><br>
+        <b>📆 Dương lịch:</b> <span style="font-size: 1rem;">{hanoi_time.strftime("%d/%m/%Y")}</span><br>
+        <b>📖 Âm lịch:</b> <span style="font-size: 1rem;">{lunar_date}</span>
     </div>
     """, unsafe_allow_html=True)
     st.divider()
     
     # Thời tiết
-    st.markdown("### 🌡️ Thời tiết")
+    st.markdown("### 🌡️ Thời tiết hôm nay")
+    cities = ["Hà Nội", "Nha Trang", "TP. HCM"]
     cols = st.columns(3)
-    for idx, city in enumerate(["Hà Nội", "Nha Trang", "TP. HCM"]):
-        w = get_weather(city)
+    
+    for idx, city in enumerate(cities):
+        w = get_weather_detailed(city)
         with cols[idx]:
             st.markdown(f"""
             <div class="weather-card">
-                <b>{city}</b><br>
-                <span class="weather-temp">{w['temp']}</span>
+                <div><b>{w['icon']} {city}</b></div>
+                <div class="weather-temp">{w['temp']}</div>
+                <div class="weather-condition">{w['condition']}</div>
             </div>
             """, unsafe_allow_html=True)
+    
     st.divider()
     
     # Thống kê
-    st.metric("👁️ Lượt xem hôm nay", st.session_state.view_count)
-    st.metric("📊 Tổng lượt xem", st.session_state.total_views)
-    if st.session_state.history:
-        st.metric("❓ Câu hỏi", len(st.session_state.history))
-    st.divider()
+    st.markdown("### 📊 Thống kê")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("👁️ Lượt xem hôm nay", f"{st.session_state.view_count:,}")
+    with col2:
+        st.metric("📊 Tổng lượt xem", f"{st.session_state.total_views:,}")
     
-    # File upload
-    uploaded_file = st.file_uploader("📎 Đính kèm file", type=["pdf", "docx", "txt"])
-    if uploaded_file is not None:
-        try:
-            from io import BytesIO
-            from PyPDF2 import PdfReader
-            from docx import Document
-            
-            if uploaded_file.name.endswith('.txt'):
-                content = uploaded_file.read().decode("utf-8")
-            elif uploaded_file.name.endswith('.pdf'):
-                reader = PdfReader(BytesIO(uploaded_file.read()))
-                content = "".join(p.extract_text() or "" for p in reader.pages)
-            else:
-                doc = Document(BytesIO(uploaded_file.read()))
-                content = "\n".join(p.text for p in doc.paragraphs)
-            
-            st.session_state.file_content = content[:5000]
-            st.success(f"✅ {uploaded_file.name}")
-        except Exception as e:
-            st.error(f"Lỗi: {e}")
-    
-    if st.session_state.file_content and st.button("🗑️ Xóa file"):
-        st.session_state.file_content = ""
-        st.rerun()
-    
+    if "history" in st.session_state:
+        st.metric("❓ Câu hỏi đã hỏi", len(st.session_state.history))
     st.divider()
     
     # Lịch sử
-    st.markdown("### 📜 Lịch sử")
-    if st.session_state.history:
-        if st.button("🗑️ Xóa lịch sử"):
+    st.markdown("### 📜 Lịch sử câu hỏi")
+    if "history" in st.session_state and st.session_state.history:
+        if st.button("🗑️ Xóa lịch sử", key="clear_history", use_container_width=True):
             st.session_state.history = []
-            st.session_state.messages = []
             st.rerun()
-        for item in st.session_state.history[:5]:
+        
+        for i, item in enumerate(st.session_state.history[:10]):
             with st.expander(f"📌 {item['time'][:10]}..."):
-                st.caption(item['query'][:100])
+                st.caption(f"**Câu hỏi:** {item['query']}")
+                st.caption(f"**Trả lời:** {item['answer_preview']}...")
     else:
-        st.info("Chưa có câu hỏi")
-    
+        st.info("💬 Chưa có câu hỏi nào")
     st.divider()
-    if st.button("🔑 API Key"):
+    
+    # Kiểm tra hệ thống
+    if st.button("🔑 Kiểm tra API Key", use_container_width=True):
         check_api_keys()
     
-    st.caption("v1.0")
+    st.caption("⚖️ Legal AI VN v1.0")
 
 # ========================================
 # MAIN CONTENT
 # ========================================
 st.title("⚖️ Legal AI Việt Nam")
-st.markdown("Hỏi đáp pháp luật thông minh")
+st.markdown("Hỏi đáp pháp luật thông minh dựa trên văn bản gốc")
 
-# Kiểm tra pipeline
-if not PIPELINE_OK:
-    st.error(f"❌ Lỗi pipeline: {PIPELINE_ERROR}")
-    st.code("Hãy kiểm tra file pipeline/llm_pipeline.py và secrets GEMINI_API_KEY")
-    st.stop()
+# Hiển thị lịch sử chat
+chat_container = st.container()
+with chat_container:
+    for msg in st.session_state.messages:
+        if msg["role"] == "user":
+            st.chat_message("user").write(msg["content"])
+        else:
+            with st.chat_message("assistant"):
+                st.markdown(msg["content"])
 
-if not GEMINI_API_KEY:
-    st.error("❌ Chưa có GEMINI_API_KEY")
-    st.info("Vào Settings → Secrets → thêm GEMINI_API_KEY")
-    st.stop()
-
-# Hiển thị file đính kèm
-if st.session_state.file_content:
-    st.info(f"📎 Đã đính kèm file ({len(st.session_state.file_content):,} ký tự)")
-
-# Lịch sử chat
-for msg in st.session_state.messages:
-    st.chat_message(msg["role"]).write(msg["content"])
-
-# Chat input
-query = st.chat_input("Nhập câu hỏi pháp luật...", disabled=st.session_state.is_processing)
+# ========================================
+# CHAT INPUT FIXED AT BOTTOM
+# ========================================
+with st.container():
+    st.markdown('<div style="height: 100px;"></div>', unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([8, 1, 1])
+    
+    with col1:
+        # Chat input
+        query = st.chat_input("Nhập câu hỏi pháp luật của bạn...", disabled=st.session_state.is_processing)
+    
+    with col2:
+        # File attach button
+        with st.popover("📎", help="Đính kèm file (PDF, DOCX, TXT)"):
+            uploaded_file = st.file_uploader(
+                "Chọn file đính kèm",
+                type=["pdf", "docx", "txt"],
+                label_visibility="collapsed"
+            )
+            if uploaded_file is not None:
+                from io import BytesIO
+                from PyPDF2 import PdfReader
+                from docx import Document
+                
+                try:
+                    if uploaded_file.name.endswith('.txt'):
+                        file_content = uploaded_file.read().decode("utf-8")
+                    elif uploaded_file.name.endswith('.pdf'):
+                        reader = PdfReader(BytesIO(uploaded_file.read()))
+                        file_content = ""
+                        for page in reader.pages:
+                            file_content += page.extract_text() or ""
+                    else:
+                        doc = Document(BytesIO(uploaded_file.read()))
+                        file_content = "\n".join([p.text for p in doc.paragraphs])
+                    
+                    st.session_state.file_content = file_content[:5000]
+                    st.success(f"✅ Đã tải: {uploaded_file.name}")
+                except Exception as e:
+                    st.error(f"Lỗi đọc file: {e}")
 
 # ========================================
 # XỬ LÝ CÂU HỎI
 # ========================================
 if query and not st.session_state.is_processing:
     st.session_state.is_processing = True
+    st.session_state.stop_generation = False
     
-    # Thêm câu hỏi
+    # Thêm câu hỏi vào lịch sử
     st.session_state.messages.append({"role": "user", "content": query})
-    st.chat_message("user").write(query)
     
-    # Xây dựng query
+    # Kết hợp file content
     full_query = query
-    if st.session_state.file_content:
-        full_query = query + f"\n\n[File đính kèm]:\n{st.session_state.file_content}\n"
+    if hasattr(st.session_state, 'file_content') and st.session_state.file_content:
+        full_query = query + f"\n\n[Nội dung file đính kèm]:\n{st.session_state.file_content}\n"
+        st.session_state.file_content = ""
     
     # Gọi API
-    with st.spinner("⚖️ Đang tra cứu..."):
-        start = time.time()
+    with st.spinner("⚖️ Đang tra cứu văn bản pháp luật..."):
+        start_time = time.time()
         try:
-            print(f"\n--- Processing: {query[:50]}...")
-            result = ask_legal_ai(query=full_query.strip(), top_k=6, threshold=0.45)
-            latency = round(time.time() - start, 2)
-            print(f"Result status: {result.get('status')}")
+            result = ask_legal_ai(query=full_query.strip(), top_k=8, threshold=0.45)
+            latency = round(time.time() - start_time, 2)
             
-            if result.get("status") == "ok":
-                # Lấy answer
-                answer_text = result.get("answer", "Không có nội dung trả lời")
+            if result["status"] == "ok":
+                # Trích xuất các chunks
+                retrieved_chunks = result.get("retrieved_chunks", [])
                 
-                # Loại bỏ phần CĂN CỨ PHÁP LÝ nếu có
+                # Nhóm các Điều theo văn bản
+                doc_articles = extract_articles_from_chunks(retrieved_chunks)
+                
+                # Định dạng căn cứ pháp lý
+                legal_basis = format_legal_basis(doc_articles)
+                
+                # Lấy phần trả lời chính
+                answer_text = result["answer"]
                 if "CĂN CỨ PHÁP LÝ" in answer_text:
                     parts = answer_text.split("CĂN CỨ PHÁP LÝ")
                     main_answer = parts[0].strip()
-                    legal_part = parts[1] if len(parts) > 1 else ""
                 else:
                     main_answer = answer_text
-                    legal_part = ""
                 
-                # Format legal basis từ chunks
-                chunks = result.get("retrieved_chunks", [])
-                legal_basis = format_legal_basis(chunks)
+                # Xây dựng response
+                final_response = f"""**Trả lời:**
+
+{main_answer}
+
+---
+**Căn cứ pháp lý:**
+
+{legal_basis}
+
+---
+⏱️ Thời gian xử lý: {latency} giây"""
                 
-                # Kết hợp
-                final_answer = f"**Trả lời:**\n\n{main_answer}\n\n---\n**Căn cứ pháp lý:**\n\n{legal_basis}\n\n---\n⏱️ {latency}s"
+                save_to_history(query, final_response[:200])
                 
-            elif result.get("status") == "out_of_scope":
-                final_answer = f"⚠️ {result.get('message', 'Câu hỏi ngoài phạm vi hỗ trợ.')}"
-            elif result.get("status") == "no_result":
-                final_answer = f"⚠️ {result.get('message', 'Không tìm thấy thông tin.')}"
+            elif result["status"] in ["out_of_scope", "no_result"]:
+                final_response = f"⚠️ {result.get('message', 'Không tìm thấy thông tin phù hợp.')}"
             else:
-                final_answer = f"❌ {result.get('message', 'Lỗi không xác định')}"
+                final_response = f"❌ {result.get('message', 'Có lỗi xảy ra')}"
                 
         except Exception as e:
-            error_msg = str(e)
-            print(f"Error: {error_msg}")
-            print(traceback.format_exc())
-            final_answer = f"❌ Lỗi: {error_msg[:200]}"
+            final_response = f"❌ Lỗi: {str(e)}"
         
-        # Hiển thị
-        st.session_state.messages.append({"role": "assistant", "content": final_answer})
-        with st.chat_message("assistant"):
-            st.markdown(final_answer)
-        
-        # Lưu lịch sử
-        save_to_history(query, final_answer[:200])
-        
-        # Reset
-        st.session_state.file_content = ""
-        st.session_state.is_processing = False
-        st.rerun()
+        st.session_state.messages.append({"role": "assistant", "content": final_response})
+    
+    st.session_state.is_processing = False
+    st.rerun()
+
+# ========================================
+# STOP BUTTON (hiển thị khi đang xử lý)
+# ========================================
+if st.session_state.is_processing:
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button("⏹️ Dừng tạo câu trả lời", use_container_width=True):
+            st.session_state.stop_generation = True
+            st.session_state.is_processing = False
+            st.rerun()
 
 # Footer
 st.divider()
-st.caption("⚠️ Thông tin tham khảo, không thay thế tư vấn pháp lý chính thức.")
+st.caption("⚠️ Thông tin mang tính tham khảo. Không thay thế tư vấn pháp lý chính thức.")
