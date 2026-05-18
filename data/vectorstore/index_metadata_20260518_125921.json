@@ -1,0 +1,10 @@
+{
+  "model_name": "intfloat/multilingual-e5-base",
+  "embedding_dim": 768,
+  "total_chunks": 12882,
+  "dataset_signature": "7d9ef9b9e45e3248320ebb0718bcbfb3",
+  "faiss_index_type": "IndexFlatIP",
+  "normalized": true,
+  "created_at": "2026-05-18T12:59:21.889308",
+  "max_retrieval_chars": 1800
+}
