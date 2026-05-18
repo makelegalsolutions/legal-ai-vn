@@ -24,59 +24,37 @@ def get_hanoi_time():
     return datetime.now(tz_hanoi)
 
 # ========================================
-# TIỆN ÍCH 1B: LẤY NGÀY ÂM LỊCH CHÍNH XÁC
-# Dùng thư viện lunardate (offline, không phụ thuộc API)
-# pip install lunardate
+# TIỆN ÍCH 1B: LẤY NGÀY ÂM LỊCH (OFFLINE, KHÔNG CẦN API)
 # ========================================
+# Dùng thuật toán âm lịch đơn giản, không cần thư viện ngoài
 @st.cache_data(ttl=3600)
 def get_lunar_date() -> str:
-    """Tính ngày âm lịch chính xác bằng lunardate (offline)"""
-    try:
-        from lunardate import LunarDate
-        today = datetime.now()
-        lunar = LunarDate.fromSolarDate(today.year, today.month, today.day)
-        
-        # Tên năm can chi
-        CAN = ["Canh", "Tân", "Nhâm", "Quý", "Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ"]
-        CHI = ["Thân", "Dậu", "Tuất", "Hợi", "Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ",
-               "Ngọ", "Mùi"]
-        can = CAN[lunar.year % 10]
-        chi = CHI[lunar.year % 12]
-        
-        leap_str = " (nhuận)" if lunar.isLeapMonth else ""
-        return f"Ngày {lunar.day} tháng {lunar.month}{leap_str} năm {can} {chi} ({lunar.year})"
-    except ImportError:
-        # Fallback nếu chưa cài lunardate: tính thủ công đơn giản
-        return _lunar_fallback()
-    except Exception:
-        return _lunar_fallback()
-
-def _lunar_fallback() -> str:
-    """Fallback tính âm lịch không cần thư viện (thuật toán Hồng Kông)"""
+    """Tính ngày âm lịch (ước tính) - không phụ thuộc API"""
     try:
         today = datetime.now()
-        # Số ngày Julian
-        a = (14 - today.month) // 12
-        y = today.year + 4800 - a
-        m = today.month + 12 * a - 3
-        jdn = (today.day + (153 * m + 2) // 5 + 365 * y +
-               y // 4 - y // 100 + y // 400 - 32045)
-
-        # Tính tháng âm lịch (xấp xỉ)
-        lunar_month_days = 29.53059
-        epoch_jdn = 2299160  # 15/10/1582
-        days_since = jdn - epoch_jdn
-
-        cycle = int(days_since / lunar_month_days)
-        day_in_month = int(days_since % lunar_month_days) + 1
-
-        # Tháng trong năm
-        lunar_month = (cycle % 12) + 1
-
-        return f"Ngày {day_in_month} tháng {lunar_month} (ước tính)"
+        
+        # Can chi cho năm
+        can = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"]
+        chi = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"]
+        
+        year_can = can[(today.year - 4) % 10]
+        year_chi = chi[(today.year - 4) % 12]
+        
+        # Tính ngày âm lịch ước tính (đơn giản)
+        # Có thể thay bằng API chính xác hơn nếu cần
+        lunar_day = (today.day + 1) % 30
+        if lunar_day == 0:
+            lunar_day = 30
+        lunar_month = today.month
+        if lunar_day > 28 and today.day < 5:
+            lunar_month = today.month - 1
+            if lunar_month == 0:
+                lunar_month = 12
+        
+        return f"Ngày {lunar_day} tháng {lunar_month} năm {year_can} {year_chi}"
     except Exception:
         today = datetime.now()
-        return f"Ngày {today.day}/{today.month} (đang cập nhật)"
+        return f"Ngày {today.day}/{today.month} (DL)"
 
 # ========================================
 # TIỆN ÍCH 1C: LẤY THÔNG TIN THỜI TIẾT
@@ -94,9 +72,7 @@ def get_weather_detailed(city: str) -> dict:
 
     try:
         coords = cities[city]
-        url = (f"https://api.open-meteo.com/v1/forecast"
-               f"?latitude={coords['lat']}&longitude={coords['lon']}"
-               f"&current_weather=true&timezone=Asia/Bangkok")
+        url = f"https://api.open-meteo.com/v1/forecast?latitude={coords['lat']}&longitude={coords['lon']}&current_weather=true&timezone=Asia/Bangkok"
         response = requests.get(url, timeout=10)
         if response.status_code == 200:
             data = response.json()
@@ -127,33 +103,27 @@ def get_weather_detailed(city: str) -> dict:
 # ========================================
 # TIỆN ÍCH 2: XỬ LÝ VĂN BẢN VÀ TRÍCH DẪN
 # ========================================
-# Bảng tra cứu loại văn bản từ ký hiệu trong số hiệu
 _DOC_TYPE_RULES = [
-    # Thứ tự quan trọng: kiểm tra cụ thể trước, chung sau
     (r"LUAT|(?<!\w)QH\d{2}", "Luật"),
     (r"ND-CP|NĐ-CP", "Nghị định"),
-    (r"TT-BTC|TT-BGDDT|TT-BYT|TT-BCA|TT-BQP|TT-BCT|TT-BTTTT|TT-BKHCN|TT-BKHDT|TT-BNNPTNT|TT-BTP|TT-BTNMT|TT-BGTVT|TT-BLĐTBXH|TT-BXD|TT-BNV|TT-BNG|TT-BVHTTDL|(?<!\w)TT-", "Thông tư"),
+    (r"TT-BTC|TT-", "Thông tư"),
     (r"TTLT-", "Thông tư liên tịch"),
-    (r"QD-TTg|QĐ-TTg", "Quyết định"),
-    (r"(?<!\w)QD-|(?<!\w)QĐ-", "Quyết định"),
-    (r"NQ-CP|NQ-QH|NQ-HDND|(?<!\w)NQ-", "Nghị quyết"),
-    (r"CT-TTg|(?<!\w)CT-", "Chỉ thị"),
-    (r"(?<!\w)PL-", "Pháp lệnh"),
-    (r"HDTD|HDNN", "Hiến pháp / Văn bản Nhà nước"),
+    (r"QD-TTg|QĐ-", "Quyết định"),
+    (r"NQ-", "Nghị quyết"),
+    (r"CT-", "Chỉ thị"),
+    (r"PL-", "Pháp lệnh"),
 ]
 
 def extract_doc_type(doc_id: str) -> str:
-    """Trích xuất loại văn bản từ số hiệu, dùng regex ưu tiên."""
     if not doc_id:
         return "Văn bản"
-    upper = doc_id.upper().replace("Đ", "D").replace("Ô", "O").replace("Ư", "U")
+    upper = doc_id.upper()
     for pattern, label in _DOC_TYPE_RULES:
         if re.search(pattern, upper):
             return label
     return "Văn bản"
 
 def format_doc_name(doc_id: str) -> str:
-    """Trả về chuỗi dạng: Luật 60/2024/QH15"""
     if not doc_id:
         return ""
     doc_type = extract_doc_type(doc_id)
@@ -161,16 +131,16 @@ def format_doc_name(doc_id: str) -> str:
     return f"{doc_type} {formatted_id}"
 
 def extract_articles_from_chunks(chunks: List[Dict]) -> Dict[str, Dict]:
-    """
-    Trích xuất Điều từ chunks, nhóm theo văn bản.
-    Mỗi văn bản chỉ xuất hiện 1 lần; các Điều sắp xếp tăng dần.
-    """
+    """Trích xuất Điều từ chunks, nhóm theo văn bản"""
     doc_articles: Dict[str, Dict] = {}
 
-    for chunk in (chunks or []):
+    if not chunks:
+        return doc_articles
+
+    for chunk in chunks:
         doc_id = chunk.get('doc_id', '').strip()
         article = chunk.get('article', '')
-        title = chunk.get('title', '')  # tiêu đề văn bản (nếu pipeline trả về)
+        title = chunk.get('title', '')
 
         if not doc_id:
             continue
@@ -183,27 +153,22 @@ def extract_articles_from_chunks(chunks: List[Dict]) -> Dict[str, Dict]:
 
         if doc_id not in doc_articles:
             doc_articles[doc_id] = {
-                "title": title,   # tiêu đề văn bản
+                "title": title,
                 "articles": set()
             }
         elif title and not doc_articles[doc_id]["title"]:
-            # Cập nhật tiêu đề nếu chunk sau mới có
             doc_articles[doc_id]["title"] = title
 
         if article_num is not None:
             doc_articles[doc_id]["articles"].add(article_num)
 
-    # Chuyển set → list tăng dần
     for doc_id in doc_articles:
         doc_articles[doc_id]["articles"] = sorted(doc_articles[doc_id]["articles"])
 
     return doc_articles
 
 def format_legal_basis(doc_articles: Dict[str, Dict]) -> str:
-    """
-    Định dạng căn cứ pháp lý:
-      Luật 60/2024/QH15 - Luật Dữ liệu, Điều 3, 15, 22
-    """
+    """Định dạng căn cứ pháp lý"""
     if not doc_articles:
         return "*Không có trích dẫn cụ thể từ văn bản pháp luật.*"
 
@@ -223,11 +188,11 @@ def format_legal_basis(doc_articles: Dict[str, Dict]) -> str:
             if len(articles) == 1:
                 line += f", Điều {arts_str}"
             else:
-                line += f", Điều {arts_str}"
+                line += f", các Điều {arts_str}"
 
-        lines.append(f"- {line}")
+        lines.append(f"• {line}")
 
-    return "\n".join(lines)
+    return "\n\n".join(lines)
 
 # ========================================
 # TIỆN ÍCH 3: PHÁT HIỆN NGÔN NGỮ
@@ -235,8 +200,7 @@ def format_legal_basis(doc_articles: Dict[str, Dict]) -> str:
 def detect_language(text: str) -> str:
     if not text:
         return "vi"
-    if re.search(r'[ăâđêôơưàáảãạầấẩẫậằắẳẵặềếểễệìíỉĩịòóỏõọồốổỗộờớởỡợùúủũụừứửữựỳýỷỹỵ]',
-                 text, re.IGNORECASE):
+    if re.search(r'[ăâđêôơưàáảãạầấẩẫậằắẳẵặềếểễệìíỉĩịòóỏõọồốổỗộờớởỡợùúủũụừứửữựỳýỷỹỵ]', text, re.IGNORECASE):
         return "vi"
     if re.search(r'[\u4e00-\u9fff]', text):
         return "zh"
@@ -244,9 +208,6 @@ def detect_language(text: str) -> str:
         return "ko"
     if re.search(r'[\u3040-\u309f\u30a0-\u30ff]', text):
         return "ja"
-    # Latin → tiếng Anh nếu không phải tiếng Việt
-    if re.search(r'[a-zA-Z]', text):
-        return "en"
     return "vi"
 
 _LANG_INSTRUCTION = {
@@ -353,21 +314,15 @@ st.set_page_config(
 )
 
 # ========================================
-# CSS & JS
-# Mục tiêu:
-#   - Ô chat luôn sticky ở dưới cùng (fix 2)
-#   - Icon 📎 nằm trong ô chat bên trái mũi tên (fix 3)
-#   - Nút submit đổi thành ■ khi đang xử lý (fix 4)
+# CSS (đã sửa lỗi selector)
 # ========================================
 st.markdown("""
 <style>
-/* ─── Sidebar ─────────────────────────────────────────── */
 [data-testid="stSidebar"] {
     min-width: 320px;
     max-width: 380px;
 }
 
-/* ─── Thời gian / thời tiết ──────────────────────────── */
 .time-info { font-size: 1rem; line-height: 1.8; margin-bottom: 10px; }
 .weather-card {
     background-color: #f0f2f6;
@@ -377,92 +332,11 @@ st.markdown("""
 .weather-temp { font-size: 1.3rem; font-weight: bold; color: #1e1e1e; }
 .weather-condition { font-size: 0.8rem; color: #333333; margin-top: 4px; }
 
-/* ─── FIX 2: Sticky chat input ───────────────────────── */
-/* Streamlit đặt chat input trong một wrapper cố định,
-   ta đảm bảo nó luôn ở đáy viewport dù trang dài. */
-[data-testid="stBottom"] {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    z-index: 999 !important;
-    background: var(--background-color, white);
-    padding: 8px 0 4px 0;
-    box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
-}
-
-/* Thêm padding ở dưới nội dung chat để không bị che */
-section.main > div { padding-bottom: 100px; }
-
-/* ─── FIX 3: Icon đính kèm trong ô chat ─────────────── */
-/* Ẩn label mặc định của file uploader trong sidebar */
-.stFileUploader > div:first-child { display: none; }
-
-/* Nút attach giả nằm trong khung chat */
-#attach-btn-wrapper {
-    position: fixed;
-    bottom: 16px;
-    /* Căn trái theo sidebar width + offset */
-    left: calc(320px + 16px);   /* điều chỉnh nếu sidebar khác */
-    z-index: 1000;
-}
-
-/* Nút attach nhỏ, kiểu icon */
-#attach-btn-wrapper button {
-    background: none;
-    border: none;
-    font-size: 1.3rem;
-    cursor: pointer;
-    padding: 4px 6px;
-    border-radius: 6px;
-    transition: background 0.15s;
-    color: #555;
-    line-height: 1;
-}
-#attach-btn-wrapper button:hover { background: rgba(0,0,0,0.07); }
-
-/* ─── FIX 4: Submit button đổi hình khi processing ──── */
-/* Streamlit render nút submit chat bên trong stChatInput */
-[data-testid="stChatInputSubmitButton"] button {
-    transition: all 0.2s;
-}
-
-/* Class .processing được toggle bởi JS bên dưới */
-body.processing [data-testid="stChatInputSubmitButton"] button {
-    color: transparent !important;    /* ẩn icon gốc */
-    position: relative;
-}
-body.processing [data-testid="stChatInputSubmitButton"] button::after {
-    content: "■";
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    color: #e53935;
+/* Thêm padding dưới cùng để chat input không che nội dung */
+.block-container {
+    padding-bottom: 100px !important;
 }
 </style>
-
-<script>
-// ─── FIX 4 JS: Toggle class processing theo session_state ───
-// Streamlit không expose state trực tiếp sang JS,
-// ta dùng cách poll DOM: khi spinner hiển thị → processing.
-(function() {
-    function checkProcessing() {
-        const spinner = document.querySelector('[data-testid="stSpinner"]');
-        if (spinner) {
-            document.body.classList.add('processing');
-        } else {
-            document.body.classList.remove('processing');
-        }
-    }
-    // Quan sát thay đổi DOM
-    const observer = new MutationObserver(checkProcessing);
-    observer.observe(document.body, { childList: true, subtree: true });
-    checkProcessing();
-})();
-</script>
 """, unsafe_allow_html=True)
 
 # ========================================
@@ -475,7 +349,6 @@ for key, default in [
     ("messages", []),
     ("is_processing", False),
     ("file_content", ""),
-    ("show_file_uploader", False),
     ("pending_file_name", ""),
 ]:
     if key not in st.session_state:
@@ -527,7 +400,7 @@ with st.sidebar:
         st.metric("❓ Câu hỏi đã hỏi", len(st.session_state.history))
     st.divider()
 
-    # ─── FIX 3: File uploader nằm trong sidebar, toggle bởi nút attach ───
+    # File uploader
     st.markdown("### 📎 Đính kèm tài liệu")
     uploaded_file = st.file_uploader(
         "Chọn file (PDF, DOCX, TXT)",
@@ -556,7 +429,7 @@ with st.sidebar:
         except Exception as e:
             st.error(f"Lỗi đọc file: {e}")
 
-    if st.session_state.file_content and st.button("🗑️ Xóa file đính kèm", use_container_width=True):
+    if st.session_state.file_content and st.button("🗑️ Xóa file", use_container_width=True):
         st.session_state.file_content = ""
         st.session_state.pending_file_name = ""
         st.rerun()
@@ -601,11 +474,9 @@ if not GEMINI_API_KEY:
 
 # Hiển thị file đính kèm hiện tại
 if st.session_state.file_content:
-    st.info(f"📎 Đã đính kèm: **{st.session_state.pending_file_name}** "
-            f"({len(st.session_state.file_content):,} ký tự) — "
-            f"File sẽ được gửi kèm câu hỏi tiếp theo.")
+    st.info(f"📎 Đã đính kèm: **{st.session_state.pending_file_name}** ({len(st.session_state.file_content):,} ký tự)")
 
-# ─── Lịch sử chat ───────────────────────────────────────────────────────────
+# Lịch sử chat
 for msg in st.session_state.messages:
     if msg["role"] == "user":
         st.chat_message("user").write(msg["content"])
@@ -614,7 +485,7 @@ for msg in st.session_state.messages:
             st.markdown(msg["content"])
 
 # ========================================
-# CHAT INPUT (sticky bottom — fix 2)
+# CHAT INPUT
 # ========================================
 query = st.chat_input(
     "Nhập câu hỏi pháp luật...",
@@ -627,77 +498,78 @@ query = st.chat_input(
 if query and not st.session_state.is_processing:
     st.session_state.is_processing = True
 
-    # ── Hiển thị câu hỏi ──────────────────────────────────────────────────
+    # Hiển thị câu hỏi
     st.session_state.messages.append({"role": "user", "content": query})
     st.chat_message("user").write(query)
 
-    # ── Kết hợp file content ───────────────────────────────────────────────
+    # Kết hợp file content
     full_query = query
     if st.session_state.file_content:
-        full_query = (query +
-                      f"\n\n[Nội dung file đính kèm]:\n{st.session_state.file_content}\n")
+        full_query = query + f"\n\n[Nội dung file đính kèm]:\n{st.session_state.file_content}\n"
 
-    # ── FIX 7: Phát hiện ngôn ngữ và gắn instruction ──────────────────────
+    # Phát hiện ngôn ngữ
     detected_lang = detect_language(query)
     lang_name = _LANG_LABEL.get(detected_lang, "Tiếng Việt")
     lang_instruction = _LANG_INSTRUCTION.get(detected_lang, _LANG_INSTRUCTION["vi"])
     full_query = full_query.strip() + f"\n\n{lang_instruction}"
 
-    # ── Gọi pipeline ────────────────────────────────────────────────────────
-    with st.spinner("⚖️ Đang tra cứu văn bản pháp luật..."):
+    # Gọi pipeline
+    with st.spinner(f"⚖️ Đang tra cứu... ({lang_name})"):
         start_time = time.time()
         try:
             result = ask_legal_ai(query=full_query, top_k=8, threshold=0.45)
             latency = round(time.time() - start_time, 2)
 
-            if result["status"] == "ok":
+            if result.get("status") == "ok":
                 retrieved_chunks = result.get("retrieved_chunks", [])
-
-                # ── FIX 5 & 6: Căn cứ pháp lý gọn, đúng thứ tự, đủ tên ──
+                
+                # Xử lý căn cứ pháp lý
                 doc_articles = extract_articles_from_chunks(retrieved_chunks)
                 legal_basis = format_legal_basis(doc_articles)
 
-                # Tách phần trả lời chính (bỏ phần CĂN CỨ do pipeline tự tạo)
+                # Lấy phần trả lời chính
                 answer_text = result.get("answer", "")
-                main_answer = (answer_text.split("CĂN CỨ PHÁP LÝ")[0].strip()
-                               if "CĂN CỨ PHÁP LÝ" in answer_text
-                               else answer_text)
+                if "CĂN CỨ PHÁP LÝ" in answer_text:
+                    main_answer = answer_text.split("CĂN CỨ PHÁP LÝ")[0].strip()
+                else:
+                    main_answer = answer_text
+                
                 if not main_answer:
                     main_answer = answer_text
 
                 final_response = (
                     f"**Trả lời:**\n\n{main_answer}\n\n"
                     f"---\n**📚 Căn cứ pháp lý:**\n\n{legal_basis}\n\n"
-                    f"---\n"
-                    f"⏱️ {latency}s | 🌐 {lang_name}"
+                    f"---\n⏱️ {latency}s | 🌐 {lang_name}"
                 )
+                save_to_history(query, final_response[:200])
 
-            elif result["status"] in ("out_of_scope", "no_result"):
-                final_response = (
-                    f"⚠️ {result.get('message', 'Không tìm thấy thông tin phù hợp.')}\n\n"
-                    f"💡 Hãy thử hỏi về doanh nghiệp, lao động, hành chính..."
-                )
+            elif result.get("status") in ("out_of_scope", "no_result"):
+                final_response = f"⚠️ {result.get('message', 'Không tìm thấy thông tin phù hợp.')}"
             else:
-                final_response = f"❌ {result.get('message', 'Có lỗi xảy ra.')}"
+                final_response = f"❌ {result.get('message', 'Có lỗi xảy ra')}"
 
         except Exception as e:
             final_response = f"❌ Lỗi: {str(e)}"
-            print(f"Pipeline error: {e}")
+            print(f"Error: {e}")
 
-    # ── Hiển thị & lưu ──────────────────────────────────────────────────────
+    # Hiển thị response
     st.session_state.messages.append({"role": "assistant", "content": final_response})
     with st.chat_message("assistant"):
         st.markdown(final_response)
 
-    save_to_history(query, final_response[:200])
-
-    # Reset file sau khi gửi
+    # Reset file
     st.session_state.file_content = ""
     st.session_state.pending_file_name = ""
-
     st.session_state.is_processing = False
     st.rerun()
 
-# ─── Footer ─────────────────────────────────────────────────────────────────
+# Nút dừng (chỉ hiển thị khi đang xử lý)
+if st.session_state.is_processing:
+    if st.button("⏹️ Dừng tạo câu trả lời", use_container_width=True):
+        st.session_state.is_processing = False
+        st.rerun()
+
+# Footer
 st.divider()
 st.caption("⚠️ Thông tin mang tính tham khảo. Không thay thế tư vấn pháp lý chính thức.")
