@@ -1,0 +1,854 @@
+{
+  "66.16-2016-NQ-CP.pdf": {
+    "size": 6276815,
+    "text_length": 34041,
+    "type": "pdf",
+    "validated_at": "1779080057.3241246"
+  },
+  "16-2026-NQ-CP.pdf": {
+    "size": 1158708,
+    "text_length": 38632,
+    "type": "pdf",
+    "validated_at": "1779080058.0301764"
+  },
+  "143.2025.QH15.pdf": {
+    "size": 1167816,
+    "text_length": 31379,
+    "type": "pdf",
+    "validated_at": "1779080059.17526"
+  },
+  "96-2026-ND-CP.pdf": {
+    "size": 1730545,
+    "text_length": 36022,
+    "type": "pdf",
+    "validated_at": "1779080060.7863781"
+  },
+  "103-2026-ND-CP.pdf": {
+    "size": 862376,
+    "text_length": 34982,
+    "type": "pdf",
+    "validated_at": "1779080061.5254323"
+  },
+  "126-2014-NĐ-CP.pdf": {
+    "size": 531452,
+    "text_length": 36555,
+    "type": "pdf",
+    "validated_at": "1779080062.2674866"
+  },
+  "52-2010-QH12.pdf": {
+    "size": 351012,
+    "text_length": 31816,
+    "type": "pdf",
+    "validated_at": "1779080062.8715308"
+  },
+  "52-2014-QH13.pdf": {
+    "size": 621405,
+    "text_length": 36063,
+    "type": "pdf",
+    "validated_at": "1779080064.1126218"
+  },
+  "93-2025-QH15-05-VBHN-VPQH-2026.pdf": {
+    "size": 747379,
+    "text_length": 37555,
+    "type": "pdf",
+    "validated_at": "1779080065.3697138"
+  },
+  "68-2020-QH15-06-VBHN-VPQH-2026.pdf": {
+    "size": 478091,
+    "text_length": 37307,
+    "type": "pdf",
+    "validated_at": "1779080066.0047603"
+  },
+  "25-2023-QH15-09-VBHN-VPQH-2026.pdf": {
+    "size": 1236146,
+    "text_length": 36335,
+    "type": "pdf",
+    "validated_at": "1779080067.025835"
+  },
+  "108-2016-QH13-10-VBHN-VPQH-2026.pdf": {
+    "size": 579744,
+    "text_length": 35120,
+    "type": "pdf",
+    "validated_at": "1779080067.8758974"
+  },
+  "09-2012-QH13-11-VBHN-VPQH-2026.pdf": {
+    "size": 490507,
+    "text_length": 33578,
+    "type": "pdf",
+    "validated_at": "1779080068.9529762"
+  },
+  "48-2024-QH15--12-VBHN-VPQH-2026.pdf": {
+    "size": 616962,
+    "text_length": 39999,
+    "type": "pdf",
+    "validated_at": "1779080069.6310258"
+  },
+  "32-2013-TT-NHNN-14-VBHN-NHNN-2019.pdf": {
+    "size": 414179,
+    "text_length": 19578,
+    "type": "pdf",
+    "validated_at": "1779080071.0081267"
+  },
+  "21-2014-TT-NHNN-29_VBHN-NHNN-2026.pdf": {
+    "size": 905243,
+    "text_length": 36922,
+    "type": "pdf",
+    "validated_at": "1779080071.790184"
+  },
+  "28-2005-PL-UTVQH11-07_VBHN-VPQH-2013.pdf": {
+    "size": 481768,
+    "text_length": 33985,
+    "type": "pdf",
+    "validated_at": "1779080072.7752562"
+  },
+  "67-2026-ND-CP.pdf": {
+    "size": 1036981,
+    "text_length": 32036,
+    "type": "pdf",
+    "validated_at": "1779080073.5693142"
+  },
+  "68-2026-ND-CP.pdf": {
+    "size": 599054,
+    "text_length": 37575,
+    "type": "pdf",
+    "validated_at": "1779080074.383374"
+  },
+  "74-2026-ND-CP.pdf": {
+    "size": 1231204,
+    "text_length": 39156,
+    "type": "pdf",
+    "validated_at": "1779080075.9194865"
+  },
+  "75-2026-ND-CP.pdf": {
+    "size": 997462,
+    "text_length": 32908,
+    "type": "pdf",
+    "validated_at": "1779080077.140576"
+  },
+  "77-2026-ND-CP.pdf": {
+    "size": 745014,
+    "text_length": 34537,
+    "type": "pdf",
+    "validated_at": "1779080078.3106616"
+  },
+  "79-2026-ND-CP.pdf": {
+    "size": 964711,
+    "text_length": 34450,
+    "type": "pdf",
+    "validated_at": "1779080080.078791"
+  },
+  "81-2026-ND-CP.pdf": {
+    "size": 1142568,
+    "text_length": 33510,
+    "type": "pdf",
+    "validated_at": "1779080081.0668633"
+  },
+  "85-2026-ND-CP.pdf": {
+    "size": 2407097,
+    "text_length": 35553,
+    "type": "pdf",
+    "validated_at": "1779080082.7349856"
+  },
+  "87-2026-ND-CP.pdf": {
+    "size": 1199649,
+    "text_length": 32988,
+    "type": "pdf",
+    "validated_at": "1779080084.367105"
+  },
+  "88-2026-ND-CP.pdf": {
+    "size": 764206,
+    "text_length": 31068,
+    "type": "pdf",
+    "validated_at": "1779080085.2741716"
+  },
+  "89-2026-ND-CP.pdf": {
+    "size": 816843,
+    "text_length": 31131,
+    "type": "pdf",
+    "validated_at": "1779080086.3682516"
+  },
+  "90-2026-ND-CP.pdf": {
+    "size": 1308000,
+    "text_length": 30333,
+    "type": "pdf",
+    "validated_at": "1779080088.1273804"
+  },
+  "91-2026-ND-CP.pdf": {
+    "size": 1327608,
+    "text_length": 35216,
+    "type": "pdf",
+    "validated_at": "1779080089.2984662"
+  },
+  "94-2026-ND-CP.pdf": {
+    "size": 1327608,
+    "text_length": 35216,
+    "type": "pdf",
+    "validated_at": "1779080090.046521"
+  },
+  "98-2026-ND-CP.pdf": {
+    "size": 809795,
+    "text_length": 29894,
+    "type": "pdf",
+    "validated_at": "1779080090.783575"
+  },
+  "101-2026-ND-CP.pdf": {
+    "size": 1325431,
+    "text_length": 36428,
+    "type": "pdf",
+    "validated_at": "1779080092.3246877"
+  },
+  "92-2026-ND-CP.pdf": {
+    "size": 757379,
+    "text_length": 11200,
+    "type": "pdf",
+    "validated_at": "1779080093.1157458"
+  },
+  "104-2026-ND-CP.pdf": {
+    "size": 1234157,
+    "text_length": 38910,
+    "type": "pdf",
+    "validated_at": "1779080093.9268053"
+  },
+  "109-2026-ND-CP.pdf": {
+    "size": 2060501,
+    "text_length": 32757,
+    "type": "pdf",
+    "validated_at": "1779080095.5109212"
+  },
+  "59-2020-QH14-67-VBHN-VPQH-2026.pdf": {
+    "size": 1328980,
+    "text_length": 35404,
+    "type": "pdf",
+    "validated_at": "1779080097.1550415"
+  },
+  "31-2024-QH15-44-VBHN-VPQH-2026.pdf": {
+    "size": 3098910,
+    "text_length": 40263,
+    "type": "pdf",
+    "validated_at": "1779080101.666372"
+  },
+  "72-2020-QH14-15-VBHN-VPQH-2025.pdf": {
+    "size": 1833607,
+    "text_length": 34341,
+    "type": "pdf",
+    "validated_at": "1779080103.6405165"
+  },
+  "64-2020-QH14-02-VBHN-VPQH-2022.pdf": {
+    "size": 736776,
+    "text_length": 29705,
+    "type": "pdf",
+    "validated_at": "1779080104.9376116"
+  },
+  "168-2025-ND-CP.pdf": {
+    "size": 1175711,
+    "text_length": 32083,
+    "type": "pdf",
+    "validated_at": "1779080106.6607378"
+  },
+  "47-2021-ND-CP.pdf": {
+    "size": 593767,
+    "text_length": 29025,
+    "type": "pdf",
+    "validated_at": "1779080107.8008213"
+  },
+  "22-2023-QH15-74-VBHN-VPQH-2026.pdf": {
+    "size": 1712414,
+    "text_length": 43610,
+    "type": "pdf",
+    "validated_at": "1779080109.355935"
+  },
+  "38-2026-ND-CP.pdf": {
+    "size": 617709,
+    "text_length": 27713,
+    "type": "pdf",
+    "validated_at": "1779080110.463016"
+  },
+  "59-2026-ND-CP.pdf": {
+    "size": 1556035,
+    "text_length": 35808,
+    "type": "pdf",
+    "validated_at": "1779080111.4080853"
+  },
+  "60-2026-ND-CP.pdf": {
+    "size": 1157548,
+    "text_length": 37883,
+    "type": "pdf",
+    "validated_at": "1779080112.9671996"
+  },
+  "64-2026-ND-CP.pdf": {
+    "size": 769909,
+    "text_length": 28562,
+    "type": "pdf",
+    "validated_at": "1779080114.244293"
+  },
+  "66-2026-ND-CP.pdf": {
+    "size": 852185,
+    "text_length": 34241,
+    "type": "pdf",
+    "validated_at": "1779080115.5603895"
+  },
+  "70-2026-ND-CP.pdf": {
+    "size": 4306693,
+    "text_length": 37079,
+    "type": "pdf",
+    "validated_at": "1779080118.4826035"
+  },
+  "71-2026-ND-CP.pdf": {
+    "size": 1198288,
+    "text_length": 32330,
+    "type": "pdf",
+    "validated_at": "1779080119.9127083"
+  },
+  "73-2026-ND-CP.pdf": {
+    "size": 1133622,
+    "text_length": 36490,
+    "type": "pdf",
+    "validated_at": "1779080121.2958095"
+  },
+  "106-2026-ND-CP.pdf": {
+    "size": 637922,
+    "text_length": 27981,
+    "type": "pdf",
+    "validated_at": "1779080121.8738518"
+  },
+  "93-2026-ND-CP.pdf": {
+    "size": 934842,
+    "text_length": 33771,
+    "type": "pdf",
+    "validated_at": "1779080123.0719395"
+  },
+  "105-2026-ND-CP.pdf": {
+    "size": 396128,
+    "text_length": 33581,
+    "type": "pdf",
+    "validated_at": "1779080123.6339808"
+  },
+  "95-2026-ND-CP.pdf": {
+    "size": 1583599,
+    "text_length": 32925,
+    "type": "pdf",
+    "validated_at": "1779080125.085087"
+  },
+  "112-2026-ND-CP.pdf": {
+    "size": 1327813,
+    "text_length": 36925,
+    "type": "pdf",
+    "validated_at": "1779080126.5831966"
+  },
+  "110-2026-ND-CP.pdf": {
+    "size": 996771,
+    "text_length": 34030,
+    "type": "pdf",
+    "validated_at": "1779080127.5772696"
+  },
+  "115-2026-ND-CP.pdf": {
+    "size": 1282633,
+    "text_length": 35680,
+    "type": "pdf",
+    "validated_at": "1779080128.978372"
+  },
+  "102-2026-ND-CP.pdf": {
+    "size": 820609,
+    "text_length": 25628,
+    "type": "pdf",
+    "validated_at": "1779080130.4264781"
+  },
+  "121-2026-ND-CP.pdf": {
+    "size": 630373,
+    "text_length": 25536,
+    "type": "pdf",
+    "validated_at": "1779080131.7015715"
+  },
+  "123-2026-ND-CP.pdf": {
+    "size": 540599,
+    "text_length": 7410,
+    "type": "pdf",
+    "validated_at": "1779080132.785651"
+  },
+  "86-NQ-CP-2026.pdf": {
+    "size": 700759,
+    "text_length": 31472,
+    "type": "pdf",
+    "validated_at": "1779080133.8207266"
+  },
+  "125-2026-ND-CP.pdf": {
+    "size": 849294,
+    "text_length": 35729,
+    "type": "pdf",
+    "validated_at": "1779080134.9768114"
+  },
+  "127.2026-ND-CP.pdf": {
+    "size": 1731889,
+    "text_length": 34244,
+    "type": "pdf",
+    "validated_at": "1779080136.6279323"
+  },
+  "135-2026-ND-CP.pdf": {
+    "size": 829454,
+    "text_length": 16077,
+    "type": "pdf",
+    "validated_at": "1779080137.673009"
+  },
+  "137-2026-ND-CP.pdf": {
+    "size": 1133396,
+    "text_length": 33110,
+    "type": "pdf",
+    "validated_at": "1779080138.6790824"
+  },
+  "66-2020-QH14.pdf": {
+    "size": 502821,
+    "text_length": 30729,
+    "type": "pdf",
+    "validated_at": "1779080139.7451606"
+  },
+  "70-2020-QH14.pdf": {
+    "size": 528565,
+    "text_length": 27450,
+    "type": "pdf",
+    "validated_at": "1779080140.8062382"
+  },
+  "69-2020-QH14.pdf": {
+    "size": 699875,
+    "text_length": 30751,
+    "type": "pdf",
+    "validated_at": "1779080142.1363356"
+  },
+  "04-2022-QH15.pdf": {
+    "size": 422894,
+    "text_length": 28077,
+    "type": "pdf",
+    "validated_at": "1779080143.1984134"
+  },
+  "05-2022-QH15.pdf": {
+    "size": 505714,
+    "text_length": 29426,
+    "type": "pdf",
+    "validated_at": "1779080144.4135025"
+  },
+  "10-2022-QH15.pdf": {
+    "size": 714381,
+    "text_length": 32263,
+    "type": "pdf",
+    "validated_at": "1779080145.6305916"
+  },
+  "13-2022-QH15.pdf": {
+    "size": 504743,
+    "text_length": 27240,
+    "type": "pdf",
+    "validated_at": "1779080146.6486661"
+  },
+  "14-2022-QH15.pdf": {
+    "size": 919324,
+    "text_length": 29521,
+    "type": "pdf",
+    "validated_at": "1779080147.9267597"
+  },
+  "81-2023-QH15.pdf": {
+    "size": 620551,
+    "text_length": 34718,
+    "type": "pdf",
+    "validated_at": "1779080149.2718582"
+  },
+  "15-2023-QH15.pdf": {
+    "size": 778473,
+    "text_length": 27946,
+    "type": "pdf",
+    "validated_at": "1779080150.5029485"
+  },
+  "16-2023-QH15.pdf": {
+    "size": 713052,
+    "text_length": 30261,
+    "type": "pdf",
+    "validated_at": "1779080151.3680117"
+  },
+  "17-2023-QH15.pdf": {
+    "size": 821679,
+    "text_length": 29853,
+    "type": "pdf",
+    "validated_at": "1779080152.8201182"
+  },
+  "18-2023-QH-15.pdf": {
+    "size": 523867,
+    "text_length": 29401,
+    "type": "pdf",
+    "validated_at": "1779080153.5471714"
+  },
+  "19-2023-QH15.pdf": {
+    "size": 622946,
+    "text_length": 32298,
+    "type": "pdf",
+    "validated_at": "1779080154.334229"
+  },
+  "20-2023-QH15.pdf": {
+    "size": 514663,
+    "text_length": 29821,
+    "type": "pdf",
+    "validated_at": "1779080155.292299"
+  },
+  "28-2023-QH15.pdf": {
+    "size": 906296,
+    "text_length": 33025,
+    "type": "pdf",
+    "validated_at": "1779080156.6113958"
+  },
+  "29-2023-QH15.pdf": {
+    "size": 726118,
+    "text_length": 33144,
+    "type": "pdf",
+    "validated_at": "1779080157.9294922"
+  },
+  "35-2024-QH15.pdf": {
+    "size": 743123,
+    "text_length": 33999,
+    "type": "pdf",
+    "validated_at": "1779080158.7225504"
+  },
+  "41-2024-QH15.pdf": {
+    "size": 1311363,
+    "text_length": 33663,
+    "type": "pdf",
+    "validated_at": "1779080160.7526991"
+  },
+  "46-2024-QH15.pdf": {
+    "size": 473879,
+    "text_length": 34668,
+    "type": "pdf",
+    "validated_at": "1779080161.9967902"
+  },
+  "47-2024-QH15.pdf": {
+    "size": 522863,
+    "text_length": 35039,
+    "type": "pdf",
+    "validated_at": "1779080162.8378518"
+  },
+  "50-2024-QH15.pdf": {
+    "size": 260498,
+    "text_length": 32323,
+    "type": "pdf",
+    "validated_at": "1779080163.9279315"
+  },
+  "164-2024-QH15.pdf": {
+    "size": 464918,
+    "text_length": 16498,
+    "type": "pdf",
+    "validated_at": "1779080165.1540213"
+  },
+  "58.2024-QH15.pdf": {
+    "size": 774978,
+    "text_length": 30205,
+    "type": "pdf",
+    "validated_at": "1779080165.8630733"
+  },
+  "55-2024-QH15.pdf": {
+    "size": 429765,
+    "text_length": 32848,
+    "type": "pdf",
+    "validated_at": "1779080166.5541239"
+  },
+  "171-2024-NQ-QH15.pdf": {
+    "size": 430241,
+    "text_length": 9049,
+    "type": "pdf",
+    "validated_at": "1779080167.3301806"
+  },
+  "60-2024-QH15.pdf": {
+    "size": 373063,
+    "text_length": 31947,
+    "type": "pdf",
+    "validated_at": "1779080168.578272"
+  },
+  "61-2024-QH15.pdf": {
+    "size": 936779,
+    "text_length": 35448,
+    "type": "pdf",
+    "validated_at": "1779080169.4893389"
+  },
+  "63-2025-QH15.pdf": {
+    "size": 352563,
+    "text_length": 34953,
+    "type": "pdf",
+    "validated_at": "1779080170.5744183"
+  },
+  "189-2025-QH15.pdf": {
+    "size": 306662,
+    "text_length": 17683,
+    "type": "pdf",
+    "validated_at": "1779080171.9015155"
+  },
+  "64-2025-QH15.pdf": {
+    "size": 1134687,
+    "text_length": 30879,
+    "type": "pdf",
+    "validated_at": "1779080173.0315983"
+  },
+  "65-2025-QH15.pdf": {
+    "size": 477729,
+    "text_length": 35767,
+    "type": "pdf",
+    "validated_at": "1779080174.14868"
+  },
+  "68-2025-QH15.pdf": {
+    "size": 603134,
+    "text_length": 32135,
+    "type": "pdf",
+    "validated_at": "1779080175.4107726"
+  },
+  "71-2025-QH15.pdf": {
+    "size": 538673,
+    "text_length": 32527,
+    "type": "pdf",
+    "validated_at": "1779080176.6528635"
+  },
+  "67-2025-QH15.pdf": {
+    "size": 643573,
+    "text_length": 33792,
+    "type": "pdf",
+    "validated_at": "1779080177.9219563"
+  },
+  "66-2025-QH15.pdf": {
+    "size": 7157639,
+    "text_length": 810,
+    "type": "pdf",
+    "validated_at": "1779080180.9231763"
+  },
+  "69-2025-QH15.pdf": {
+    "size": 20240689,
+    "text_length": 827,
+    "type": "pdf",
+    "validated_at": "1779080184.5974452"
+  },
+  "80-2025-QH15.pdf": {
+    "size": 413898,
+    "text_length": 32393,
+    "type": "pdf",
+    "validated_at": "1779080185.8315356"
+  },
+  "84-2025-QH15.pdf": {
+    "size": 490308,
+    "text_length": 31052,
+    "type": "pdf",
+    "validated_at": "1779080186.5215862"
+  },
+  "89-2025-QH15.pdf": {
+    "size": 664221,
+    "text_length": 35056,
+    "type": "pdf",
+    "validated_at": "1779080188.1567059"
+  },
+  "91-2025-QH15.pdf": {
+    "size": 357221,
+    "text_length": 32930,
+    "type": "pdf",
+    "validated_at": "1779080188.9417634"
+  },
+  "95-2025-QH15.pdf": {
+    "size": 410039,
+    "text_length": 33451,
+    "type": "pdf",
+    "validated_at": "1779080190.057845"
+  },
+  "93-2025-QH15.pdf": {
+    "size": 512196,
+    "text_length": 35503,
+    "type": "pdf",
+    "validated_at": "1779080191.3319385"
+  },
+  "94-2025-QH15.pdf": {
+    "size": 487932,
+    "text_length": 33891,
+    "type": "pdf",
+    "validated_at": "1779080192.7390416"
+  },
+  "100-2025-QH15.pdf": {
+    "size": 1017026,
+    "text_length": 31059,
+    "type": "pdf",
+    "validated_at": "1779080194.2061489"
+  },
+  "102-2025-QH15.pdf": {
+    "size": 444723,
+    "text_length": 30363,
+    "type": "pdf",
+    "validated_at": "1779080194.807193"
+  },
+  "101-2025-QH15.pdf": {
+    "size": 508159,
+    "text_length": 32416,
+    "type": "pdf",
+    "validated_at": "1779080195.5342462"
+  },
+  "103-2025-QH15.pdf": {
+    "size": 569024,
+    "text_length": 32820,
+    "type": "pdf",
+    "validated_at": "1779080196.2162962"
+  },
+  "104-2025-QH15.pdf": {
+    "size": 578621,
+    "text_length": 33386,
+    "type": "pdf",
+    "validated_at": "1779080196.9053466"
+  },
+  "106-2025-QH15.pdf": {
+    "size": 1035049,
+    "text_length": 38547,
+    "type": "pdf",
+    "validated_at": "1779080198.1974413"
+  },
+  "137-2025-QH15.pdf": {
+    "size": 4621725,
+    "text_length": 40958,
+    "type": "pdf",
+    "validated_at": "1779080202.1577313"
+  },
+  "120-2025-QH15.pdf": {
+    "size": 1429399,
+    "text_length": 38211,
+    "type": "pdf",
+    "validated_at": "1779080203.6088376"
+  },
+  "108-20025-QH15.pdf": {
+    "size": 787366,
+    "text_length": 35873,
+    "type": "pdf",
+    "validated_at": "1779080204.5599072"
+  },
+  "109-2025-QH15.pdf": {
+    "size": 416500,
+    "text_length": 31101,
+    "type": "pdf",
+    "validated_at": "1779080205.1399496"
+  },
+  "110-2025-QH15.pdf": {
+    "size": 424616,
+    "text_length": 33974,
+    "type": "pdf",
+    "validated_at": "1779080206.087019"
+  },
+  "111-2025-QH15.pdf": {
+    "size": 1010339,
+    "text_length": 34924,
+    "type": "pdf",
+    "validated_at": "1779080207.4851215"
+  },
+  "112-2025-QH15.pdf": {
+    "size": 1523362,
+    "text_length": 38193,
+    "type": "pdf",
+    "validated_at": "1779080208.7672153"
+  },
+  "113-2025-QH15.pdf": {
+    "size": 446960,
+    "text_length": 31207,
+    "type": "pdf",
+    "validated_at": "1779080209.308255"
+  },
+  "114-2025-QH15.pdf": {
+    "size": 1154468,
+    "text_length": 35181,
+    "type": "pdf",
+    "validated_at": "1779080210.2563243"
+  },
+  "116-2025-QH15.pdf": {
+    "size": 1498163,
+    "text_length": 39075,
+    "type": "pdf",
+    "validated_at": "1779080211.7154312"
+  },
+  "117-2025-QH15.pdf": {
+    "size": 466689,
+    "text_length": 35638,
+    "type": "pdf",
+    "validated_at": "1779080212.6785018"
+  },
+  "121-2025-QH15.pdf": {
+    "size": 1495249,
+    "text_length": 39831,
+    "type": "pdf",
+    "validated_at": "1779080213.9165924"
+  },
+  "122-2025-QH15.pdf": {
+    "size": 578020,
+    "text_length": 33200,
+    "type": "pdf",
+    "validated_at": "1779080214.716651"
+  },
+  "124-2025-QH15.pdf": {
+    "size": 569398,
+    "text_length": 37625,
+    "type": "pdf",
+    "validated_at": "1779080215.8257322"
+  },
+  "125-2025-QH15.pdf": {
+    "size": 508026,
+    "text_length": 38181,
+    "type": "pdf",
+    "validated_at": "1779080216.831806"
+  },
+  "126-2015-QH15.pdf": {
+    "size": 535138,
+    "text_length": 34677,
+    "type": "pdf",
+    "validated_at": "1779080217.939887"
+  },
+  "128-2025-QH15.pdf": {
+    "size": 695586,
+    "text_length": 37023,
+    "type": "pdf",
+    "validated_at": "1779080219.3549907"
+  },
+  "129-2025-QH15.pdf": {
+    "size": 540749,
+    "text_length": 31665,
+    "type": "pdf",
+    "validated_at": "1779080219.9660354"
+  },
+  "130-2025-QH15.pdf": {
+    "size": 889804,
+    "text_length": 36877,
+    "type": "pdf",
+    "validated_at": "1779080221.1551225"
+  },
+  "134-2025-QH15.pdf": {
+    "size": 502586,
+    "text_length": 42991,
+    "type": "pdf",
+    "validated_at": "1779080222.1261935"
+  },
+  "135-2025-QH15.pdf": {
+    "size": 1021143,
+    "text_length": 31622,
+    "type": "pdf",
+    "validated_at": "1779080223.494294"
+  },
+  "142-2025-QH15.pdf": {
+    "size": 972991,
+    "text_length": 36091,
+    "type": "pdf",
+    "validated_at": "1779080224.3653576"
+  },
+  "145-2025-QH15.pdf": {
+    "size": 353960,
+    "text_length": 33571,
+    "type": "pdf",
+    "validated_at": "1779080224.9934037"
+  },
+  "148-2025-QH15.pdf": {
+    "size": 981800,
+    "text_length": 38644,
+    "type": "pdf",
+    "validated_at": "1779080226.4225082"
+  },
+  "105-2025-QH15.pdf": {
+    "size": 655316,
+    "text_length": 32672,
+    "type": "pdf",
+    "validated_at": "1779080227.4325821"
+  },
+  "133-2026-ND-CP.pdf": {
+    "size": 1125473,
+    "text_length": 33819,
+    "type": "pdf",
+    "validated_at": "1779080228.8196838"
+  }
+}
