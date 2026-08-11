@@ -5,6 +5,6 @@
   "dataset_signature": "7d9ef9b9e45e3248320ebb0718bcbfb3",
   "faiss_index_type": "IndexFlatIP",
   "normalized": true,
-  "created_at": "2026-08-10T19:11:10.078838",
+  "created_at": "2026-08-11T02:13:21.023318",
   "max_retrieval_chars": 1800
 }
