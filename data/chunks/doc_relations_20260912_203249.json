@@ -1,0 +1,1822 @@
+{
+  "66.16-2016-NQ-CP": {
+    "doc_id": "66.16-2016-NQ-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "66.16-2016-NQ-CP.pdf",
+    "amends": [
+      "17-2020-NĐ-CP",
+      "08-2018-NĐ-CP",
+      "21-2018-TT-BCT",
+      "124-2024-NĐ-CP",
+      "143-2016-NĐ-CP",
+      "04-2023-NĐ-CP",
+      "4-2023-NĐ-CP",
+      "24-2022-NĐ-CP",
+      "09-2022-QH15",
+      "15-2020-NĐ-CP",
+      "245-2025-NĐ-CP",
+      "134-2016-NĐ-CP",
+      "67-2020-NĐ-CP",
+      "373-2025-NĐ-CP",
+      "56-2024-QH15",
+      "20-2012-QH13",
+      "137-2018-NĐ-CP",
+      "37-2024-QH15",
+      "64-2014-QH13",
+      "140-2018-NĐ-CP",
+      "133-2024-NĐ-CP",
+      "155-2018-NĐ-CP",
+      "229-2025-NĐ-CP",
+      "18-2021-NĐ-CP"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "16-2026-NQ-CP": {
+    "doc_id": "16-2026-NQ-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "16-2026-NQ-CP.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "143.2025.QH15": {
+    "doc_id": "143.2025.QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "143.2025.QH15.pdf",
+    "amends": [
+      "28-2018-QH14",
+      "116-2025-QH15",
+      "112-2025-QH15",
+      "72-2020-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "96-2026-ND-CP": {
+    "doc_id": "96-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "96-2026-ND-CP.pdf",
+    "amends": [
+      "03-2022-QH15",
+      "72-2020-QH14",
+      "31-2021-NĐ-CP"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "103-2026-ND-CP": {
+    "doc_id": "103-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "103-2026-ND-CP.pdf",
+    "amends": [
+      "17-2012-NĐ-CP"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "126-2014-NĐ-CP": {
+    "doc_id": "126-2014-NĐ-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "126-2014-NĐ-CP.pdf",
+    "amends": [],
+    "repeals": [
+      "70-2001-NĐ-CP"
+    ],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "52-2010-QH12": {
+    "doc_id": "52-2010-QH12",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "52-2010-QH12.pdf",
+    "amends": [
+      "51-2001-QH10"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "52-2014-QH13": {
+    "doc_id": "52-2014-QH13",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "52-2014-QH13.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "93-2025-QH15": {
+    "doc_id": "93-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "93-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "32-2013-QH13",
+      "43-2024-QH15",
+      "35-2018-QH14",
+      "03-2016-QH14",
+      "36-2009-QH12"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "68-2020-QH15": {
+    "doc_id": "68-2020-QH15",
+    "is_vbhn": true,
+    "version_id": "06-VBHN-VPQH-2026",
+    "file_name": "68-2020-QH15-06-VBHN-VPQH-2026.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "51-2024-QH15",
+      "112-2025-QH15",
+      "135-2025-QH15",
+      "32-2013-QH13",
+      "36-2013-QH13"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "25-2023-QH15": {
+    "doc_id": "25-2023-QH15",
+    "is_vbhn": true,
+    "version_id": "09-VBHN-VPQH-2026",
+    "file_name": "25-2023-QH15-09-VBHN-VPQH-2026.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "51-2024-QH15",
+      "112-2025-QH15",
+      "135-2025-QH15",
+      "68-2020-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "108-2016-QH13": {
+    "doc_id": "108-2016-QH13",
+    "is_vbhn": true,
+    "version_id": "10-VBHN-VPQH-2026",
+    "file_name": "108-2016-QH13-10-VBHN-VPQH-2026.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "09-2012-QH13": {
+    "doc_id": "09-2012-QH13",
+    "is_vbhn": true,
+    "version_id": "11-VBHN-VPQH-2026",
+    "file_name": "09-2012-QH13-11-VBHN-VPQH-2026.pdf",
+    "amends": [
+      "51-2001-QH10",
+      "203-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "48-2024-QH15": {
+    "doc_id": "48-2024-QH15",
+    "is_vbhn": true,
+    "version_id": "12-VBHN-VPQH-2026",
+    "file_name": "48-2024-QH15--12-VBHN-VPQH-2026.pdf",
+    "amends": [
+      "203-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "32-2013-TT-NHNN": {
+    "doc_id": "32-2013-TT-NHNN",
+    "is_vbhn": true,
+    "version_id": "14-VBHN-NHNN-2019",
+    "file_name": "32-2013-TT-NHNN-14-VBHN-NHNN-2019.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "21-2014-TT-NHNN-29_VBHN-NHNN-2026": {
+    "doc_id": "21-2014-TT-NHNN-29_VBHN-NHNN-2026",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "21-2014-TT-NHNN-29_VBHN-NHNN-2026.pdf",
+    "amends": [
+      "21-2014-TT-NHNN",
+      "96-2025-QH15",
+      "32-2013-TT-NHNN"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": "31/12/2025"
+  },
+  "28-2005-PL-UTVQH11-07_VBHN-VPQH-2013": {
+    "doc_id": "28-2005-PL-UTVQH11-07_VBHN-VPQH-2013",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "28-2005-PL-UTVQH11-07_VBHN-VPQH-2013.pdf",
+    "amends": [
+      "51-2001-QH10"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "67-2026-ND-CP": {
+    "doc_id": "67-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "67-2026-ND-CP.pdf",
+    "amends": [
+      "06-2021-NĐ-CP",
+      "123-2025-NĐ-CP"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "68-2026-ND-CP": {
+    "doc_id": "68-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "68-2026-ND-CP.pdf",
+    "amends": [
+      "149-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "74-2026-ND-CP": {
+    "doc_id": "74-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "74-2026-ND-CP.pdf",
+    "amends": [],
+    "repeals": [
+      "08-2025-NĐ-CP"
+    ],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "75-2026-ND-CP": {
+    "doc_id": "75-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "75-2026-ND-CP.pdf",
+    "amends": [
+      "130-2005-NĐ-CP"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "77-2026-ND-CP": {
+    "doc_id": "77-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "77-2026-ND-CP.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "79-2026-ND-CP": {
+    "doc_id": "79-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "79-2026-ND-CP.pdf",
+    "amends": [
+      "67-2020-QH14",
+      "68-2025-NĐ-CP",
+      "37-2022-NĐ-CP"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "81-2026-ND-CP": {
+    "doc_id": "81-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "81-2026-ND-CP.pdf",
+    "amends": [
+      "67-2020-QH14",
+      "123-2021-NĐ-CP"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "85-2026-ND-CP": {
+    "doc_id": "85-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "85-2026-ND-CP.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "87-2026-ND-CP": {
+    "doc_id": "87-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "87-2026-ND-CP.pdf",
+    "amends": [
+      "67-2020-QH14",
+      "75-2025-QH15",
+      "68-2025-NĐ-CP",
+      "38-2021-NĐ-CP",
+      "129-2021-NĐ-CP"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "88-2026-ND-CP": {
+    "doc_id": "88-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "88-2026-ND-CP.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "89-2026-ND-CP": {
+    "doc_id": "89-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "89-2026-ND-CP.pdf",
+    "amends": [
+      "118-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "90-2026-ND-CP": {
+    "doc_id": "90-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "90-2026-ND-CP.pdf",
+    "amends": [
+      "67-2020-QH14",
+      "44-2024-QH15",
+      "15-2008-QH12",
+      "46-2014-QH13",
+      "68-2025-NĐ-CP",
+      "115-2018-NĐ-CP",
+      "77-2013-NĐ-CP"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "91-2026-ND-CP": {
+    "doc_id": "91-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "91-2026-ND-CP.pdf",
+    "amends": [],
+    "repeals": [
+      "160-2024-NĐ-CP"
+    ],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "94-2026-ND-CP": {
+    "doc_id": "94-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "94-2026-ND-CP.pdf",
+    "amends": [],
+    "repeals": [
+      "160-2024-NĐ-CP"
+    ],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "98-2026-ND-CP": {
+    "doc_id": "98-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "98-2026-ND-CP.pdf",
+    "amends": [
+      "54-2014-QH13",
+      "28-2018-QH14",
+      "41-2024-QH15",
+      "32-2013-QH13",
+      "68-2025-NĐ-CP"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "101-2026-ND-CP": {
+    "doc_id": "101-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "101-2026-ND-CP.pdf",
+    "amends": [
+      "115-2025-QH15",
+      "16-2023-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "92-2026-ND-CP": {
+    "doc_id": "92-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "92-2026-ND-CP.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "104-2026-ND-CP": {
+    "doc_id": "104-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "104-2026-ND-CP.pdf",
+    "amends": [
+      "90-2025-QH15",
+      "64-2020-QH14",
+      "15-2023-QH15",
+      "57-2024-QH15",
+      "43-2024-QH15",
+      "03-2016-QH14",
+      "226-2025-NĐ-CP"
+    ],
+    "repeals": [],
+    "replaces": [
+      "98-2025-NĐ-CP"
+    ],
+    "effective_date": ""
+  },
+  "109-2026-ND-CP": {
+    "doc_id": "109-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "109-2026-ND-CP.pdf",
+    "amends": [
+      "67-2020-QH14",
+      "20-2012-QH13",
+      "35-2018-QH14",
+      "37-2024-QH15",
+      "90-2025-QH15",
+      "56-2014-QH13",
+      "64-2014-QH13",
+      "117-2024-NĐ-CP"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "59-2020-QH14": {
+    "doc_id": "59-2020-QH14",
+    "is_vbhn": true,
+    "version_id": "67-VBHN-VPQH-2026",
+    "file_name": "59-2020-QH14-67-VBHN-VPQH-2026.pdf",
+    "amends": [
+      "64-2020-QH14",
+      "72-2020-QH14",
+      "40-2019-QH14",
+      "03-2016-QH14",
+      "70-2014-QH13",
+      "64-2014-QH13",
+      "203-2025-QH15",
+      "03-2022-QH15",
+      "35-2018-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "31-2024-QH15": {
+    "doc_id": "31-2024-QH15",
+    "is_vbhn": true,
+    "version_id": "44-VBHN-VPQH-2026",
+    "file_name": "31-2024-QH15-44-VBHN-VPQH-2026.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "11-2022-QH15",
+      "35-2018-QH14",
+      "64-2020-QH14",
+      "85-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "72-2020-QH14": {
+    "doc_id": "72-2020-QH14",
+    "is_vbhn": true,
+    "version_id": "15-VBHN-VPQH-2025",
+    "file_name": "72-2020-QH14-15-VBHN-VPQH-2025.pdf",
+    "amends": [
+      "08-2017-QH14",
+      "61-2014-QH13",
+      "77-2015-QH13",
+      "35-2018-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "64-2020-QH14": {
+    "doc_id": "64-2020-QH14",
+    "is_vbhn": true,
+    "version_id": "02-VBHN-VPQH-2022",
+    "file_name": "64-2020-QH14-02-VBHN-VPQH-2022.pdf",
+    "amends": [
+      "64-2020-QH14",
+      "72-2020-QH14",
+      "40-2019-QH14",
+      "03-2016-QH14",
+      "70-2014-QH13",
+      "64-2014-QH13",
+      "61-2014-QH13",
+      "35-2018-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "168-2025-ND-CP": {
+    "doc_id": "168-2025-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "168-2025-ND-CP.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [
+      "01-2021-NĐ-CP"
+    ],
+    "effective_date": ""
+  },
+  "47-2021-ND-CP": {
+    "doc_id": "47-2021-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "47-2021-ND-CP.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "22-2023-QH15": {
+    "doc_id": "22-2023-QH15",
+    "is_vbhn": true,
+    "version_id": "74-VBHN-VPQH-2026",
+    "file_name": "22-2023-QH15-74-VBHN-VPQH-2026.pdf",
+    "amends": [
+      "15-2023-QH15",
+      "72-2020-QH14",
+      "03-2022-QH15",
+      "203-2025-QH15",
+      "57-2024-QH15",
+      "71-2014-QH13",
+      "64-2020-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "38-2026-ND-CP": {
+    "doc_id": "38-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "38-2026-ND-CP.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "59-2026-ND-CP": {
+    "doc_id": "59-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "59-2026-ND-CP.pdf",
+    "amends": [
+      "68-2025-NĐ-CP"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "60-2026-ND-CP": {
+    "doc_id": "60-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "60-2026-ND-CP.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "64-2026-ND-CP": {
+    "doc_id": "64-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "64-2026-ND-CP.pdf",
+    "amends": [
+      "112-2025-NĐ-CP"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "66-2026-ND-CP": {
+    "doc_id": "66-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "66-2026-ND-CP.pdf",
+    "amends": [
+      "123-2025-QH15",
+      "24-2022-NĐ-CP"
+    ],
+    "repeals": [],
+    "replaces": [
+      "84-2020-NĐ-CP"
+    ],
+    "effective_date": ""
+  },
+  "70-2026-ND-CP": {
+    "doc_id": "70-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "70-2026-ND-CP.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "71-2026-ND-CP": {
+    "doc_id": "71-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "71-2026-ND-CP.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "73-2026-ND-CP": {
+    "doc_id": "73-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "73-2026-ND-CP.pdf",
+    "amends": [
+      "59-2020-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "106-2026-ND-CP": {
+    "doc_id": "106-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "106-2026-ND-CP.pdf",
+    "amends": [
+      "62-2020-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "93-2026-ND-CP": {
+    "doc_id": "93-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "93-2026-ND-CP.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "105-2026-ND-CP": {
+    "doc_id": "105-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "105-2026-ND-CP.pdf",
+    "amends": [
+      "47-2024-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "95-2026-ND-CP": {
+    "doc_id": "95-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "95-2026-ND-CP.pdf",
+    "amends": [
+      "24-2022-NĐ-CP",
+      "140-2018-NĐ-CP"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "112-2026-ND-CP": {
+    "doc_id": "112-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "112-2026-ND-CP.pdf",
+    "amends": [
+      "11-2022-QH15",
+      "119-2025-NĐ-CP"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "110-2026-ND-CP": {
+    "doc_id": "110-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "110-2026-ND-CP.pdf",
+    "amends": [
+      "05-2025-NĐ-CP"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "115-2026-ND-CP": {
+    "doc_id": "115-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "115-2026-ND-CP.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "102-2026-ND-CP": {
+    "doc_id": "102-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "102-2026-ND-CP.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "121-2026-ND-CP": {
+    "doc_id": "121-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "121-2026-ND-CP.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [
+      "158-2018-NĐ-CP"
+    ],
+    "effective_date": ""
+  },
+  "123-2026-ND-CP": {
+    "doc_id": "123-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "123-2026-ND-CP.pdf",
+    "amends": [
+      "48-2014-QH13",
+      "78-2016-NĐ-CP"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "86-NQ-CP-2026": {
+    "doc_id": "86-NQ-CP-2026",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "86-NQ-CP-2026.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "125-2026-ND-CP": {
+    "doc_id": "125-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "125-2026-ND-CP.pdf",
+    "amends": [
+      "36-2009-QH12"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "127.2026-ND-CP": {
+    "doc_id": "127.2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "127.2026-ND-CP.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "135-2026-ND-CP": {
+    "doc_id": "135-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "135-2026-ND-CP.pdf",
+    "amends": [
+      "94-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "137-2026-ND-CP": {
+    "doc_id": "137-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "137-2026-ND-CP.pdf",
+    "amends": [
+      "40-2018-NĐ-CP"
+    ],
+    "repeals": [],
+    "replaces": [
+      "40-2018-NĐ-CP"
+    ],
+    "effective_date": ""
+  },
+  "66-2020-QH14": {
+    "doc_id": "66-2020-QH14",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "66-2020-QH14.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "70-2020-QH14": {
+    "doc_id": "70-2020-QH14",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "70-2020-QH14.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "69-2020-QH14": {
+    "doc_id": "69-2020-QH14",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "69-2020-QH14.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "04-2022-QH15": {
+    "doc_id": "04-2022-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "04-2022-QH15.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "05-2022-QH15": {
+    "doc_id": "05-2022-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "05-2022-QH15.pdf",
+    "amends": [
+      "72-2020-QH14",
+      "31-2009-QH12"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "10-2022-QH15": {
+    "doc_id": "10-2022-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "10-2022-QH15.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "13-2022-QH15": {
+    "doc_id": "13-2022-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "13-2022-QH15.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "14-2022-QH15": {
+    "doc_id": "14-2022-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "14-2022-QH15.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "81-2023-QH15": {
+    "doc_id": "81-2023-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "81-2023-QH15.pdf",
+    "amends": [
+      "65-2020-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "15-2023-QH15": {
+    "doc_id": "15-2023-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "15-2023-QH15.pdf",
+    "amends": [
+      "32-2013-QH13",
+      "21-2017-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "16-2023-QH15": {
+    "doc_id": "16-2023-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "16-2023-QH15.pdf",
+    "amends": [
+      "45-2013-QH13",
+      "35-2018-QH14",
+      "11-2022-QH15",
+      "28-2018-QH14",
+      "15-2023-QH15",
+      "09-2017-QH14",
+      "61-2014-QH13"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "17-2023-QH15": {
+    "doc_id": "17-2023-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "17-2023-QH15.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "18-2023-QH-15": {
+    "doc_id": "18-2023-QH-15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "18-2023-QH-15.pdf",
+    "amends": [
+      "15-2008-QH12",
+      "28-2018-QH14",
+      "35-2018-QH14",
+      "60-2020-QH14",
+      "11-2022-QH15",
+      "45-2013-QH13"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "19-2023-QH15": {
+    "doc_id": "19-2023-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "19-2023-QH15.pdf",
+    "amends": [
+      "35-2018-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "20-2023-QH15": {
+    "doc_id": "20-2023-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "20-2023-QH15.pdf",
+    "amends": [
+      "21-2017-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "28-2023-QH15": {
+    "doc_id": "28-2023-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "28-2023-QH15.pdf",
+    "amends": [
+      "15-2023-QH15",
+      "35-2018-QH14",
+      "72-2020-QH14",
+      "03-2022-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "29-2023-QH15": {
+    "doc_id": "29-2023-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "29-2023-QH15.pdf",
+    "amends": [
+      "61-2020-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "35-2024-QH15": {
+    "doc_id": "35-2024-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "35-2024-QH15.pdf",
+    "amends": [
+      "15-2023-QH15",
+      "03-2022-QH15",
+      "24-2012-QH13"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "41-2024-QH15": {
+    "doc_id": "41-2024-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "41-2024-QH15.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "46-2024-QH15": {
+    "doc_id": "46-2024-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "46-2024-QH15.pdf",
+    "amends": [
+      "45-2019-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "47-2024-QH15": {
+    "doc_id": "47-2024-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "47-2024-QH15.pdf",
+    "amends": [
+      "03-2016-QH14",
+      "43-2024-QH15",
+      "21-2017-QH14",
+      "11-2022-QH15",
+      "60-2020-QH14",
+      "15-2008-QH12"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "50-2024-QH15": {
+    "doc_id": "50-2024-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "50-2024-QH15.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "164-2024-QH15": {
+    "doc_id": "164-2024-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "164-2024-QH15.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "58.2024-QH15": {
+    "doc_id": "58.2024-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "58.2024-QH15.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "55-2024-QH15": {
+    "doc_id": "55-2024-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "55-2024-QH15.pdf",
+    "amends": [
+      "03-2016-QH14",
+      "40-2013-QH13"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "171-2024-NQ-QH15": {
+    "doc_id": "171-2024-NQ-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "171-2024-NQ-QH15.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "60-2024-QH15": {
+    "doc_id": "60-2024-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "60-2024-QH15.pdf",
+    "amends": [
+      "09-2017-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "61-2024-QH15": {
+    "doc_id": "61-2024-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "61-2024-QH15.pdf",
+    "amends": [
+      "03-2016-QH14",
+      "35-2018-QH14",
+      "24-2012-QH13",
+      "72-2020-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "63-2025-QH15": {
+    "doc_id": "63-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "63-2025-QH15.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "189-2025-QH15": {
+    "doc_id": "189-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "189-2025-QH15.pdf",
+    "amends": [
+      "65-2020-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "64-2025-QH15": {
+    "doc_id": "64-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "64-2025-QH15.pdf",
+    "amends": [
+      "63-2020-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "65-2025-QH15": {
+    "doc_id": "65-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "65-2025-QH15.pdf",
+    "amends": [
+      "47-2024-QH15",
+      "21-2017-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "68-2025-QH15": {
+    "doc_id": "68-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "68-2025-QH15.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "71-2025-QH15": {
+    "doc_id": "71-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "71-2025-QH15.pdf",
+    "amends": [
+      "21-2017-QH14",
+      "32-2013-QH13",
+      "26-2012-QH13",
+      "43-2024-QH15",
+      "72-2020-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "67-2025-QH15": {
+    "doc_id": "67-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "67-2025-QH15.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "66-2025-QH15": {
+    "doc_id": "66-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "66-2025-QH15.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "69-2025-QH15": {
+    "doc_id": "69-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "69-2025-QH15.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "80-2025-QH15": {
+    "doc_id": "80-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "80-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "84-2025-QH15": {
+    "doc_id": "84-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "84-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "48-2014-QH13",
+      "21-2017-QH14",
+      "26-2018-QH14",
+      "28-2018-QH14",
+      "42-2013-QH13",
+      "35-2018-QH14",
+      "64-2014-QH13",
+      "43-2024-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "89-2025-QH15": {
+    "doc_id": "89-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "89-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "59-2020-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "91-2025-QH15": {
+    "doc_id": "91-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "91-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "95-2025-QH15": {
+    "doc_id": "95-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "95-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "03-2016-QH14",
+      "44-2024-QH15",
+      "43-2024-QH15",
+      "15-2023-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "94-2025-QH15": {
+    "doc_id": "94-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "94-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "09-2017-QH14",
+      "15-2023-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "100-2025-QH15": {
+    "doc_id": "100-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "100-2025-QH15.pdf",
+    "amends": [
+      "81-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "102-2025-QH15": {
+    "doc_id": "102-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "102-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "55-2019-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "101-2025-QH15": {
+    "doc_id": "101-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "101-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "81-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "103-2025-QH15": {
+    "doc_id": "103-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "103-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "02-2021-QH15",
+      "82-2025-QH15",
+      "51-2019-QH14",
+      "81-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "104-2025-QH15": {
+    "doc_id": "104-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "104-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "106-2025-QH15": {
+    "doc_id": "106-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "106-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "02-2021-QH15",
+      "81-2025-QH15",
+      "64-2014-QH13"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "137-2025-QH15": {
+    "doc_id": "137-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "137-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "59-2024-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "120-2025-QH15": {
+    "doc_id": "120-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "120-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "54-2014-QH13",
+      "81-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "108-20025-QH15": {
+    "doc_id": "108-20025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "108-20025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "38-2019-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "109-2025-QH15": {
+    "doc_id": "109-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "109-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "26-2012-QH13"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "110-2025-QH15": {
+    "doc_id": "110-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "110-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "21-2017-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "111-2025-QH15": {
+    "doc_id": "111-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "111-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "112-2025-QH15": {
+    "doc_id": "112-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "112-2025-QH15.pdf",
+    "amends": [
+      "03-2022-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "113-2025-QH15": {
+    "doc_id": "113-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "113-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "71-2025-QH15",
+      "73-2025-QH15",
+      "43-2024-QH15",
+      "07-2025-UBTVQH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "114-2025-QH15": {
+    "doc_id": "114-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "114-2025-QH15.pdf",
+    "amends": [],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "116-2025-QH15": {
+    "doc_id": "116-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "116-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "57-2024-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "117-2025-QH15": {
+    "doc_id": "117-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "117-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "81-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "121-2025-QH15": {
+    "doc_id": "121-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "121-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "122-2025-QH15": {
+    "doc_id": "122-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "122-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "124-2025-QH15": {
+    "doc_id": "124-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "124-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "71-2025-QH15",
+      "97-2015-QH13"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "125-2025-QH15": {
+    "doc_id": "125-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "125-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "126-2015-QH15": {
+    "doc_id": "126-2015-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "126-2015-QH15.pdf",
+    "amends": [
+      "203-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "128-2025-QH15": {
+    "doc_id": "128-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "128-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "02-2021-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "129-2025-QH15": {
+    "doc_id": "129-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "129-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "130-2025-QH15": {
+    "doc_id": "130-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "130-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "09-2017-QH14",
+      "43-2024-QH15",
+      "45-2013-QH13"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "134-2025-QH15": {
+    "doc_id": "134-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "134-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "135-2025-QH15": {
+    "doc_id": "135-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "135-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "90-2025-QH15",
+      "116-2025-QH15",
+      "112-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "142-2025-QH15": {
+    "doc_id": "142-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "142-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "73-2025-QH15",
+      "81-2025-QH15",
+      "09-2017-QH14",
+      "85-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "145-2025-QH15": {
+    "doc_id": "145-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "145-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15",
+      "98-2025-QH15",
+      "21-2017-QH14"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "148-2025-QH15": {
+    "doc_id": "148-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "148-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "105-2025-QH15": {
+    "doc_id": "105-2025-QH15",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "105-2025-QH15.pdf",
+    "amends": [
+      "203-2025-QH15"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  },
+  "133-2026-ND-CP": {
+    "doc_id": "133-2026-ND-CP",
+    "is_vbhn": false,
+    "version_id": "",
+    "file_name": "133-2026-ND-CP.pdf",
+    "amends": [
+      "54-2014-QH13",
+      "94-2025-QH15",
+      "68-2025-NĐ-CP",
+      "168-2025-NĐ-CP",
+      "17-2022-NĐ-CP"
+    ],
+    "repeals": [],
+    "replaces": [],
+    "effective_date": ""
+  }
+}
